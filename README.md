@@ -1,2 +1,2 @@
-# ml-from-scratch
-Linear &amp; Logistic Regression implemented from scratch
+# 1_ml-from-scratch
+Replace with actual README content.
