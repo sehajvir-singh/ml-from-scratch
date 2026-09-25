@@ -5,7 +5,7 @@ Research date: 2026-09-25. Primary data was pulled directly from the ARC API (`h
 ## Q1. Catalog of the 25 public ARC-AGI-3 games: mechanics, levels, human baselines, controls, goal signals
 
 ### Takeaway
-There are 25 public games with 183 levels in total, and each game has 6–10 levels. Controls split into 4 keyboard-only games, 8 click-only games and 13 mixed games. Every game is a "configure the board to match a visible target, or reach a visible goal, within a budget" puzzle. The goal is almost always shown on screen as a reference pattern, outline, marker, exit tile or target dot. Nothing ever states the goal in text. Human baselines per level range from 6 to 578 actions.
+There are 25 public games with 183 levels in total, and each game has 6–10 levels. By API tags, 4 games are keyboard-only, 8 are click-only (counting the untagged ft09) and 13 are mixed; the `available_actions` in the source differ slightly from the tags. Every game is a "configure the board to match a visible target, or reach a visible goal, within a budget" puzzle. The goal is almost always shown on screen as a reference pattern, outline, marker, exit tile or target dot. Nothing ever states the goal in text. Human baselines per level range from 6 to 578 actions.
 
 ### Cited Findings
 
