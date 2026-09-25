@@ -14,7 +14,23 @@ state never seen before in that game. So the ceiling is the model's reasoning on
 That leaves two workstreams: **(A) train the model on its own successful play** and **(B) a measurement setup
 honest enough to tell whether A worked**. Harness work goes only where it buys decisions per minute.
 
-## A. Self-play fine-tuning (the main bet)
+## Decision (2026-09-25): Kaggle GPUs only, no rented GPUs
+
+What that means for the plan:
+- **Serving model:** Flash-Next (~180B MoE) cannot be fine-tuned on the Kaggle card, so our served model stays
+  untrained. Section A is on hold.
+- **Our levers:**
+  - daily `m2` draws, since the leaderboard shows the best draw;
+  - harness A/Bs (section C), measured with the Phase A public-25 run plus a small held-out set that runs on
+    Kaggle;
+  - the Paper Track (section D), which does not require a high score.
+- **Weekly GPU quota:** about 30 hours. Spend it on 1 smoke Phase A per day (~0.6 h each) and 2–3 full
+  Phase A measurement runs per week (~2.3 h each).
+- **Optional fine-tuning on Kaggle:** a QLoRA of Qwen3.8-27B fits one 96 GB card inside a 12 h session. But a
+  27B build (1.43 hidden with fixes) starts well below Flash-Next (~4), so only try it if we have spare quota.
+  Expect it to lose.
+
+## A. Self-play fine-tuning (on hold: needs non-Kaggle GPUs for Flash-Next)
 
 Goal: a LoRA on the model we serve, trained on verified winning trajectories. This is the STaR / rejection-
 sampling recipe. On Qwen3.6-27B it went from 1.25 to 1.94 on the leaderboard (discussion 739047), and another
