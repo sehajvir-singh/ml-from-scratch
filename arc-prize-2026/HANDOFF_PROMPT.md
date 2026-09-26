@@ -6,7 +6,7 @@ You are helping me compete in the Kaggle competition **ARC Prize 2026 – ARC-AG
 (https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3).
 
 Please be honest: separate verified facts from guesses, and don't promise wins.
-Everything below is the state as of **2026-09-26**.
+Everything below is the state as of **2026-09-26 (evening UTC)**.
 
 ## 1. The competition (verified)
 
@@ -133,9 +133,10 @@ GitHub repo `sehajvir-singh/ml-from-scratch`, branch `claude/arc-prize-2026-rese
   - vc33 3/7 levels, tn36 1/7, bp35 1/9;
   - all graft markers OK, 0 graft errors;
   - the only Traceback is a known harmless one in `serving_teardown.py`.
-- **m2 hidden score, submission 1: 3.41.** That is inside B81's normal range.
-- m2 submission 2: running (Sep 26).
-- m3: pushed as `hackersinghrai/arc3-m3-smoke-r1`, Phase A running. Submit it Sep 27 UTC.
+- **m2 hidden scores:** 3.41 (Sep 25) and **4.07** (Sep 26, same notebook, so the difference is pure noise).
+  m2 mean 3.74; B81 mean 4.19. Our leaderboard score is 4.07.
+- **m3 Phase A on Kaggle:** passed with all markers, including `OURS_KEEP_ON_DEATH ok` and `variant=m3`.
+  Smoke results: vc33 3/7 (21.43), tn36 1/7 (3.57), bp35 1/9 (1.25). Submit it after 00:00 UTC Sep 27.
 
 ## 5. Key lessons (evidence-based)
 
@@ -181,6 +182,9 @@ python3 tools/adopt.py <owner>/<notebook>   # adopt a newly published top notebo
 | October | Speed build: fp8 KV (PR #55557) + 3 waves instead of 4; paired A/B testing; look for teammates (merges close Oct 26) |
 | Nov 2 | Pick 2 final submissions (one safe, one ambitious) |
 | By Nov 8 | Paper Track write-up (≤1,500 words + public notebook). This is our best prize chance, because it's judged on quality, not score |
+
+The "Path to a 22 score" section of `OCTOBER_PLAN.md` ranks the routes: adopt a published top method, then
+throughput (fp8 KV), then daily draws, then teaming.
 
 ## 9. Honest odds (our estimates)
 
