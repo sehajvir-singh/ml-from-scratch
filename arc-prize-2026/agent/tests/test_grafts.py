@@ -249,6 +249,15 @@ class GraftTests(unittest.TestCase):
         self.assertIn("bx16", prompt)
         self.assertNotIn("Px64", prompt)
 
+    def test_lean_variant(self):
+        lean = build("lean", "smoke")
+        s9 = cell(lean, 9)
+        self.assertIn("OURS_NOTE_FILL ok", s9)
+        self.assertIn('OURS_GRAFTS ok variant=lean', s9)
+        self.assertNotIn("OURS_PROMPT_EXTRAS ok", s9)
+        self.assertNotIn("OURS_KEEP_ON_DEATH ok", s9)
+        self.assertTrue(lean.name.startswith("arc3-lean-smoke-r"))
+
     def test_keep_on_death(self):
         m3 = build("m3", "smoke")
         s9 = cell(m3, 9)
