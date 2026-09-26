@@ -1,0 +1,43 @@
+# ARC-AGI-3 tracker
+
+Updated: 2026-09-25 20:40 UTC. The per-submission log is [`agent/LEDGER.md`](agent/LEDGER.md).
+
+## Deadlines
+
+| Date (UTC) | What | Status |
+|---|---|---|
+| Sep 29 | Last safe day to submit the Milestone #2 candidate | Open |
+| **Sep 30, 23:59** | Milestone #2: publish-or-hold decision (plan: hold) | Open |
+| **Oct 26, 11:59** | Entry and team-merge deadline; make the Paper Track notebook public | Open |
+| **Nov 2, 23:59** | Pick the 2 final submissions | Open |
+| **Nov 8** | Paper Track write-up due | Open |
+
+## Daily submissions (1 per UTC day)
+
+| Day | Plan | Done? | Hidden score |
+|---|---|---|---|
+| Sep 25 | m2 smoke r1 | Submitted | **3.41** |
+| Sep 26 | m2 (resubmit same version) | Submitted | **4.07** (best so far) |
+| Sep 27 | **m3** (first draw of the keep-on-death build) | Phase A OK, ready to submit | |
+| Sep 28 | **lean** (note_fill only; tests whether our prompt extras hurt) | | |
+| Sep 29 | m3 (2nd draw) | | |
+| Sep 30 | lean (2nd draw); watch whether Tong Hui Kang or others publish; hold ours | | |
+
+## Build status
+
+- [x] Research reports: winning strategy, and path to the top five
+- [x] m2 build: grafts, tests, go.py
+- [x] First push to Kaggle
+- [x] Grafts install on the real Kaggle GPU (all OURS_* markers ok)
+- [x] Phase A completes (only the harmless upstream teardown Traceback)
+- [x] First submission made
+- [x] First hidden score recorded: 3.41
+- [x] m3 build: m2 + keep-on-death graft (tested offline and on the real engine)
+- [ ] fp8-KV / 3-wave build (needs the vLLM PR #55557 check)
+- [ ] Paper Track draft
+
+## Open questions
+
+- ~~Does PR #55557 change only Python code?~~ Answered 2026-09-26: Python plus a **Triton** kernel (`ops/qsa.py`), which is JIT-compiled, so no CUDA rebuild is needed. Flag: `--kv-cache-dtype fp8_e4m3`, in vLLM 0.30+. About 1.77x KV tokens; no RULER or tool-calling regression; about 7–11% slower with speculative decoding (B81 has MTP off). Still open: which vLLM version Keith Tyser's runtime dataset pins (read `vllm-setup-provenance.json` in the Phase A output).
+- How fast does the RTX Pro 6000 use up the weekly Kaggle GPU quota?
+- Teammates: each one adds about 30 GPU-hours a week. Merges close Oct 26.
