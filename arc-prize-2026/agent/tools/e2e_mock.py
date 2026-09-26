@@ -97,7 +97,7 @@ def graft_block(nb_dir: Path) -> str:
     if "# ======== ours: grafts" not in s9:
         return ""
     start = s9.index("# ======== ours: grafts")
-    end = s9.index('print("OURS_GRAFTS ok variant=m2", flush=True)\n')
+    end = s9.index('print("OURS_GRAFTS ok variant=')
     return s9[start:end]
 
 

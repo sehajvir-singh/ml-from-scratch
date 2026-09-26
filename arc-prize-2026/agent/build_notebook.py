@@ -7,6 +7,7 @@ KV 7 GiB / MTP off / 28 sequences. Four hidden-set draws: 4.50, 3.86, 3.03, 5.36
 Variants:
   base   B81 unchanged apart from the title cell. Our control and fallback.
   m2     B81 + grafts/note_fill.py + grafts/prompt_extras.py (scoring, pacing, click candidates).
+  m3     m2 + grafts/keep_on_death.py (keep the world-model note across a GAME_OVER).
 
 Phase A (the "Save & Run All" that must succeed before you can submit) plays the 25 public games offline.
   --phase-a=full   25 games at the production 7,920 s clock (~2.3 GPU-hours; gives a public-25 score)
@@ -68,11 +69,12 @@ def graft_block(variant: str, flags: dict) -> str:
         "# ======== ours: grafts (github.com/sehajvir-singh/ml-from-scratch, arc-prize-2026/agent/grafts) ========\n",
         f"OURS_PROMPT_FLAGS = {flags!r}\n",
     ]
-    for name in ("note_fill.py", "prompt_extras.py"):
+    names = ["note_fill.py", "prompt_extras.py"] + (["keep_on_death.py"] if variant == "m3" else [])
+    for name in names:
         src = (GRAFTS / name).read_text()
         compile(src, name, "exec")
         parts.append(src if src.endswith("\n") else src + "\n")
-    parts.append('print("OURS_GRAFTS ok variant=m2", flush=True)\n')
+    parts.append(f'print("OURS_GRAFTS ok variant={variant}", flush=True)\n')
     return "".join(parts)
 
 
@@ -80,7 +82,8 @@ def title_cell(slug: str, variant: str, phase_a: str, flags: dict) -> str:
     what = (
         "**Variant `base`:** the B81 build unchanged (our control and fallback)."
         if variant == "base"
-        else "**Variant `m2`:** B81 plus three low-risk grafts in cell 9:\n"
+        else ("**Variant `m3`:** m2 plus keep-on-death (the world-model note survives a GAME_OVER on the same level).\n\n" if variant == "m3" else "")
+        + "**Variant `m2`:** B81 plus three low-risk grafts in cell 9:\n"
         "1. world-model note filled from the model's reasoning when its visible reply is empty;\n"
         "2. the exact scoring rule and per-game time left stated in each turn's prompt;\n"
         f"3. salient, non-HUD click candidates when MOUSE is valid (flags: `{flags}`)."
@@ -142,7 +145,7 @@ def build(variant: str, owner: str, phase_a: str, flags: dict, run: str) -> Path
 
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--variant", choices=("base", "m2"), required=True)
+    ap.add_argument("--variant", choices=("base", "m2", "m3"), required=True)
     ap.add_argument("--owner", required=True, help="your Kaggle username (the kernel is created under it)")
     ap.add_argument("--phase-a", choices=("full", "smoke"), default="full")
     ap.add_argument("--run", default="1", help="run tag, so repeated draws get distinct kernel slugs")

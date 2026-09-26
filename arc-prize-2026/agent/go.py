@@ -37,7 +37,7 @@ def run(cmd: list[str]) -> subprocess.CompletedProcess:
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--variant", choices=("m2", "base"), default="m2")
+    ap.add_argument("--variant", choices=("m2", "m3", "base"), default="m2")
     ap.add_argument("--phase-a", choices=("smoke", "full"), default="smoke")
     ap.add_argument("--run", default="1")
     ap.add_argument("--status", action="store_true")
@@ -76,7 +76,7 @@ def main() -> None:
             logdir = HERE / "out" / "logs"
             run(["kaggle", "kernels", "output", ref, "-p", str(logdir)])
             blob = "".join(p.read_text(errors="ignore") for p in logdir.glob("*.log")) if logdir.exists() else ""
-            marks = ["THUI_A5_PROFILE ok", "OURS_GRAFTS"] + (["OURS_NOTE_FILL ok", "OURS_PROMPT_EXTRAS ok"] if args.variant == "m2" else [])
+            marks = ["THUI_A5_PROFILE ok", "OURS_GRAFTS"] + (["OURS_NOTE_FILL ok", "OURS_PROMPT_EXTRAS ok"] if args.variant in ("m2", "m3") else [])
             for m in marks:
                 print(("  OK      " if m in blob else "  MISSING ") + m)
             print(f"\nIf all OK: open https://www.kaggle.com/code/{ref} -> 'Submit to Competition' -> submission.parquet.")

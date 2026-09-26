@@ -18,9 +18,9 @@ Updated: 2026-09-25 20:40 UTC. The per-submission log is [`agent/LEDGER.md`](age
 |---|---|---|---|
 | Sep 25 | m2 smoke r1 | Submitted | **3.41** |
 | Sep 26 | m2 (resubmit same version) | Submitted, running | – |
-| Sep 27 | m2 | | |
-| Sep 28 | m2 (or base if m2 is broken) | | |
-| Sep 29 | m2 | | |
+| Sep 27 | **m3** (first draw of the keep-on-death build) | | |
+| Sep 28 | m2 | | |
+| Sep 29 | m3 | | |
 | Sep 30 | Watch whether Tong Hui Kang or others publish; hold ours | | |
 
 ## Build status
@@ -32,6 +32,7 @@ Updated: 2026-09-25 20:40 UTC. The per-submission log is [`agent/LEDGER.md`](age
 - [x] Phase A completes (only the harmless upstream teardown Traceback)
 - [x] First submission made
 - [x] First hidden score recorded: 3.41
+- [x] m3 build: m2 + keep-on-death graft (tested offline and on the real engine)
 - [ ] fp8-KV / 3-wave build (needs the vLLM PR #55557 check)
 - [ ] Paper Track draft
 

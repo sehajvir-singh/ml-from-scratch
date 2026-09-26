@@ -249,6 +249,25 @@ class GraftTests(unittest.TestCase):
         self.assertIn("bx16", prompt)
         self.assertNotIn("Px64", prompt)
 
+    def test_keep_on_death(self):
+        m3 = build("m3", "smoke")
+        s9 = cell(m3, 9)
+        self.assertIn("OURS_KEEP_ON_DEATH ok", s9)
+        self.assertIn('OURS_GRAFTS ok variant=m3', s9)
+        ns = BUILDS.setdefault("kd_ns", {"_tool_agent": tool_agent, "__name__": "kd"})
+        if "OURS_KEEP_ON_DEATH_COUNTS" not in ns:
+            exec(compile((AGENT / "grafts" / "keep_on_death.py").read_text(), "keep_on_death", "exec"), ns)
+        agent = self.agent
+        agent._summarized_knowledge["world_model"] = "red square is the player"
+        agent._last_step_summary = {"game_over": True, "level_transition": False, "run_complete": False}
+        agent._update_summarized_knowledge_from_step_summary()
+        self.assertEqual(agent._summarized_knowledge["world_model"], "red square is the player")
+        self.assertIn("GAME_OVER", agent._summarized_knowledge["recent_findings"])
+        agent._last_step_summary = {"game_over": False, "level_transition": True, "run_complete": False}
+        agent._update_summarized_knowledge_from_step_summary()
+        self.assertEqual(agent._summarized_knowledge["world_model"], "", "a real level transition still wipes")
+        self.assertEqual(ns["OURS_KEEP_ON_DEATH_COUNTS"]["errors"], 0)
+
     def test_stall_hint(self):
         frame = Frame(BOARD, 200, 1)
         history = [HistoryEntry(action="UP", frame=frame) for _ in range(160)]
