@@ -16,7 +16,8 @@ Updated: 2026-09-25 20:40 UTC. The per-submission log is [`agent/LEDGER.md`](age
 
 | Day | Plan | Done? | Hidden score |
 |---|---|---|---|
-| Sep 25/26 | m2 smoke r1 | Phase A OK; submit next | – |
+| Sep 25 | m2 smoke r1 | Submitted | **3.41** |
+| Sep 26 | m2 (resubmit same version) | | |
 | Sep 27 | m2 | | |
 | Sep 28 | m2 (or base if m2 is broken) | | |
 | Sep 29 | m2 | | |
@@ -29,8 +30,8 @@ Updated: 2026-09-25 20:40 UTC. The per-submission log is [`agent/LEDGER.md`](age
 - [x] First push to Kaggle
 - [x] Grafts install on the real Kaggle GPU (all OURS_* markers ok)
 - [x] Phase A completes (only the harmless upstream teardown Traceback)
-- [ ] First submission made
-- [ ] First hidden score recorded
+- [x] First submission made
+- [x] First hidden score recorded: 3.41
 - [ ] fp8-KV / 3-wave build (needs the vLLM PR #55557 check)
 - [ ] Paper Track draft
 
