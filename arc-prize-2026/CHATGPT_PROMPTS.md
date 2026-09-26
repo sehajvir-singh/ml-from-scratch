@@ -29,7 +29,13 @@ Rules for every answer:
 4. One hidden run swings about +-50%. Never call something an improvement from one score.
 5. I use macOS with the fish shell. Give commands that work in fish (no <placeholders>, no bash-only syntax).
 6. Be short and concrete. End each answer with: "Top 3 actions for tomorrow" and "What would prove me wrong".
-Reply "ready" and wait for the handoff document.
+7. My zip IS the notebook and code. Open it and read arc-prize-2026/agent/ (build_notebook.py, grafts/, LEDGER.md,
+   vendor/b81/b81.ipynb) before answering. Never say "no notebook was provided".
+8. Kaggle does NOT return logs from the hidden scored run; only Phase A logs (public games) exist. My 4.07 is a Kaggle
+   hidden-leaderboard score. The model is Qwen3.8-Flash-Next NVFP4 on vLLM; the GPU is an RTX Pro 6000 96 GB.
+9. 27B models (Qwen3.6/3.8-27B, Gemma-4-31B) already scored lower (about 1.4-2.6) on this leaderboard. Don't propose them
+   unless you have new evidence.
+Reply "ready", list the files you can see in the zip, and wait for the handoff document.
 ```
 
 ---
