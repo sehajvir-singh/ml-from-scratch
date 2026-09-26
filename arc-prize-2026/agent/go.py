@@ -73,12 +73,21 @@ def main() -> None:
         low = text.lower()
         if "complete" in low:
             print("\nPhase A finished. Checking the log for our markers ...")
-            logdir = HERE / "out" / "logs"
+            logdir = HERE / "out" / f"logs-{slug}"
             run(["kaggle", "kernels", "output", ref, "-p", str(logdir)])
             blob = "".join(p.read_text(errors="ignore") for p in logdir.glob("*.log")) if logdir.exists() else ""
-            marks = ["THUI_A5_PROFILE ok", "OURS_GRAFTS"] + (["OURS_NOTE_FILL ok", "OURS_PROMPT_EXTRAS ok"] if args.variant in ("m2", "m3") else [])
+            marks = ["THUI_A5_PROFILE ok",
+                     "OURS_GRAFTS none" if args.variant == "base" else f"OURS_GRAFTS ok variant={args.variant}"]
+            if args.variant in ("m2", "m3"):
+                marks += ["OURS_NOTE_FILL ok", "OURS_PROMPT_EXTRAS ok"]
+            if args.variant == "m3":
+                marks += ["OURS_KEEP_ON_DEATH ok"]
             for m in marks:
                 print(("  OK      " if m in blob else "  MISSING ") + m)
+            for line in blob.split('"data":"'):
+                if line.startswith("[finished]"):
+                    print("  " + line.split("note=")[0])
+            print(f"  (full log in {logdir})")
             print(f"\nIf all OK: open https://www.kaggle.com/code/{ref} -> 'Submit to Competition' -> submission.parquet.")
             return
         if "error" in low or "cancel" in low:
