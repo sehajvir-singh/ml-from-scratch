@@ -30,6 +30,28 @@ What that means for the plan:
   27B build (1.43 hidden with fixes) starts well below Flash-Next (~4), so only try it if we have spare quota.
   Expect it to lose.
 
+## Path to a 22 score (2026-09-26)
+
+Our draws: m2 3.41, 4.07. A 22 would beat today's #1 (19.45). No harness patch on our chassis has ever moved a
+score by more than noise, so 22 needs a different engine, not more grafts. The realistic routes, in order:
+
+1. **Adopt a published top method.** Milestone prize winners must open-source their code, and Milestone #1's
+   winning code (Tufa Labs) is where our B81 base comes from. After Sep 30, check the Kaggle Code tab and the
+   arcprize.org blog daily for Milestone #2 releases (any team scoring above 10). Adopt within 24 h with
+   `tools/adopt.py`, then add our grafts only if an A/B supports them. This is the only route with a known
+   precedent of a 3–4× jump for a small team.
+2. **Throughput build** (fp8 KV via vLLM PR #55557, 3 waves). The winning Qwen3.8-27B journal and NVARC3 both
+   serve with an fp8 KV cache. More decisions per minute means more levels reached inside 9 h. Worth maybe +10–30%.
+3. **Draws.** The leaderboard keeps the best draw, and the final uses 2 picks. Never skip a daily submission.
+4. **Team up by Oct 26** with a team scoring above ours, pooling GPU quota and ideas.
+
+Honest odds for a 22 on the final private LB: under 1% on our own; about 3–5% if a strong method is published
+and we adopt and tune it well. A 10 or more is far more reachable (about 30%) through route 1.
+
+Checked and not useful: the AERA "explore before you solve" paper (arXiv 2605.25931) uses Qwen2.5-0.5B and
+reports RHAE 0.30, far below our 4. The Qwen3.8-27B journal peaked at LB 2.56 (its best lever was image upscale
+4→8). Another public repo reached LB 2.37.
+
 ## A. Self-play fine-tuning (on hold: needs non-Kaggle GPUs for Flash-Next)
 
 Goal: a LoRA on the model we serve, trained on verified winning trajectories. This is the STaR / rejection-
