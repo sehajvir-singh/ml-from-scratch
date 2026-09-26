@@ -17,7 +17,7 @@ Updated: 2026-09-25 20:40 UTC. The per-submission log is [`agent/LEDGER.md`](age
 | Day | Plan | Done? | Hidden score |
 |---|---|---|---|
 | Sep 25 | m2 smoke r1 | Submitted | **3.41** |
-| Sep 26 | m2 (resubmit same version) | | |
+| Sep 26 | m2 (resubmit same version) | Submitted, running | – |
 | Sep 27 | m2 | | |
 | Sep 28 | m2 (or base if m2 is broken) | | |
 | Sep 29 | m2 | | |
