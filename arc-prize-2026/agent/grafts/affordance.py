@@ -69,7 +69,7 @@ def _af_finish(pending, after):
     OURS_AFFORDANCE_COUNTS["effects"] += int(label)
     learner.add(before, parsed[0], parsed[1], label, key)
     learner.maybe_train()
-    if OURS_AFFORDANCE_COUNTS["observed"] % 500 == 0:
+    if OURS_AFFORDANCE_COUNTS["observed"] in (50, 150, 300) or OURS_AFFORDANCE_COUNTS["observed"] % 500 == 0:
         print(f"OURS_AFFORDANCE {OURS_AFFORDANCE_COUNTS}", flush=True)
 
 
