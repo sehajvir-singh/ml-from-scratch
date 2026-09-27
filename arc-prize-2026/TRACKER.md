@@ -18,7 +18,7 @@ Updated: 2026-09-25 20:40 UTC. The per-submission log is [`agent/LEDGER.md`](age
 |---|---|---|---|
 | Sep 25 | m2 smoke r1 | Submitted | **3.41** |
 | Sep 26 | m2 (resubmit same version) | Submitted | **4.07** (best so far) |
-| Sep 27 | **m3** (first draw of the keep-on-death build) | Phase A OK, ready to submit | |
+| Sep 27 | **m3** (first draw of the keep-on-death build) | Submitted 07:05 UTC, scoring | pending |
 | Sep 28 | **lean** (note_fill only; tests whether our prompt extras hurt) | | |
 | Sep 29 | m3 (2nd draw) | | |
 | Sep 30 | lean (2nd draw); watch whether Tong Hui Kang or others publish; hold ours | | |
