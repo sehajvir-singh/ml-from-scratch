@@ -10,6 +10,7 @@ Variants:
   m3     m2 + grafts/keep_on_death.py (keep the world-model note across a GAME_OVER).
   lean   B81 + grafts/note_fill.py only (no extra prompt text; Tufa found handcrafted tools hurt Duck).
   d1     lean + grafts/affordance.py (Depth Engine part 1: an action-effect CNN learned during play).
+  d2     d1 + grafts/level_carry.py (part 2: what cleared a level is carried into the next one).
 
 Phase A (the "Save & Run All" that must succeed before you can submit) plays the 25 public games offline.
   --phase-a=full   25 games at the production 7,920 s clock (~2.3 GPU-hours; gives a public-25 score)
@@ -71,7 +72,8 @@ def graft_block(variant: str, flags: dict) -> str:
         "# ======== ours: grafts (github.com/sehajvir-singh/ml-from-scratch, arc-prize-2026/agent/grafts) ========\n",
         f"OURS_PROMPT_FLAGS = {flags!r}\n",
     ]
-    names = {"lean": ["note_fill.py"], "d1": ["note_fill.py", "affordance.py"]}.get(variant) or \
+    names = {"lean": ["note_fill.py"], "d1": ["note_fill.py", "affordance.py"],
+             "d2": ["note_fill.py", "affordance.py", "level_carry.py"]}.get(variant) or \
         ["note_fill.py", "prompt_extras.py"] + (["keep_on_death.py"] if variant == "m3" else [])
     for name in names:
         src = (GRAFTS / name).read_text()
@@ -91,6 +93,9 @@ def title_cell(slug: str, variant: str, phase_a: str, flags: dict) -> str:
         else "**Variant `d1`:** lean plus an action-effect CNN trained on CPU during each game on its own moves "
         "(Depth Engine part 1). It adds a short, accuracy-gated hint: clicks likely to change the board, moves likely to do nothing."
         if variant == "d1"
+        else "**Variant `d2`:** d1 plus level carry-over: the world, goal and action notes that cleared a level are "
+        "kept as cross-level notes instead of being wiped (Depth Engine part 2)."
+        if variant == "d2"
         else ("**Variant `m3`:** m2 plus keep-on-death (the world-model note survives a GAME_OVER on the same level).\n\n" if variant == "m3" else "")
         + "**Variant `m2`:** B81 plus three low-risk grafts in cell 9:\n"
         "1. world-model note filled from the model's reasoning when its visible reply is empty;\n"
@@ -127,7 +132,7 @@ def build(variant: str, owner: str, phase_a: str, flags: dict, run: str) -> Path
     nb = load_base()
     orig = copy.deepcopy(nb)
     cells = nb["cells"]
-    suffix = "" if all(flags.values()) or variant in ("base", "lean", "d1") else "-" + "".join(k[0] for k, v in flags.items() if v)
+    suffix = "" if all(flags.values()) or variant in ("base", "lean", "d1", "d2") else "-" + "".join(k[0] for k, v in flags.items() if v)
     slug = f"arc3-{variant}{suffix}-{phase_a}-r{run}"
     cells[0]["source"] = title_cell(slug, variant, phase_a, flags).splitlines(keepends=True)
     s9 = "".join(cells[9]["source"])
@@ -154,7 +159,7 @@ def build(variant: str, owner: str, phase_a: str, flags: dict, run: str) -> Path
 
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--variant", choices=("base", "m2", "m3", "lean", "d1"), required=True)
+    ap.add_argument("--variant", choices=("base", "m2", "m3", "lean", "d1", "d2"), required=True)
     ap.add_argument("--owner", required=True, help="your Kaggle username (the kernel is created under it)")
     ap.add_argument("--phase-a", choices=("full", "smoke"), default="full")
     ap.add_argument("--run", default="1", help="run tag, so repeated draws get distinct kernel slugs")
