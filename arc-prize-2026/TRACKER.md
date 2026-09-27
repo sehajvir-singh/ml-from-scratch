@@ -47,6 +47,6 @@ Updated: 2026-09-25 20:40 UTC. The per-submission log is [`agent/LEDGER.md`](age
 
 ## Open questions
 
-- ~~Does PR #55557 change only Python code?~~ Answered 2026-09-26: Python plus a **Triton** kernel (`ops/qsa.py`), which is JIT-compiled, so no CUDA rebuild is needed. Flag: `--kv-cache-dtype fp8_e4m3`, in vLLM 0.30+. About 1.77x KV tokens; no RULER or tool-calling regression; about 7–11% slower with speculative decoding (B81 has MTP off). Still open: which vLLM version Keith Tyser's runtime dataset pins (read `vllm-setup-provenance.json` in the Phase A output).
+- ~~Does PR #55557 change only Python code?~~ Answered 2026-09-26: Python plus a **Triton** kernel (`ops/qsa.py`), which is JIT-compiled, so no CUDA rebuild is needed. Flag: `--kv-cache-dtype fp8_e4m3`, in vLLM 0.30+. About 1.77x KV tokens; no RULER or tool-calling regression; about 7–11% slower with speculative decoding (B81 has MTP off). The runtime is a custom build, vLLM `0.1.dev20073+g8e685d198` (from the m3 Phase A log). Whether it includes the PR is unknown, so fp8 KV needs a patch plus a test, not just a flag. The same log shows the model uses 74.34 GiB, the KV cache 7 GiB, max_model_len is 32768, vLLM start-up takes 955 s, and m3's keep_on_death fired 10 times with 0 errors.
 - How fast does the RTX Pro 6000 use up the weekly Kaggle GPU quota?
 - Teammates: each one adds about 30 GPU-hours a week. Merges close Oct 26.
