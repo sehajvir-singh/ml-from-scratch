@@ -23,6 +23,12 @@ Updated: 2026-09-25 20:40 UTC. The per-submission log is [`agent/LEDGER.md`](age
 | Sep 29 | m3 (2nd draw) | | |
 | Sep 30 | lean (2nd draw); watch whether Tong Hui Kang or others publish; hold ours | | |
 
+## Leaderboard snapshot (2026-09-27 13:32 UTC, from the CLI download)
+
+- **Us: rank 175 of 3,378 teams, 4.07** (team "Sehajvir singh").
+- #1 Tufa Labs 27.29 (up from 18.81 on Sep 25), #2 Daniel Franzen 21.01 (up from 16.68). The top is moving fast.
+- Check again with: `kaggle competitions leaderboard -c arc-prize-2026-arc-agi-3 --download -p lb`
+
 ## Build status
 
 - [x] Research reports: winning strategy, and path to the top five
