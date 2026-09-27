@@ -10,7 +10,7 @@
 # harness's board_changed flag is almost always true. A diff of at most 3 collinear cells within 2 cells of the
 # border counts as a timer tick, not an effect. Animated actions always count as an effect.
 # The model is kept across levels of the same game, so what it learned on level 1 carries into level 2.
-# Honesty gate: a hint is shown only when the model's predict-then-learn accuracy on its last 30 samples is at
+# Honesty gate: a hint is shown only when the model's predict-then-learn accuracy on its last 20 samples is at
 # least 80% and beats always guessing the majority label.
 # Fail-open: without torch, or on any exception, the prompt is unchanged. CPU only; never touches CUDA.
 import collections as _af_collections
@@ -32,11 +32,11 @@ except Exception:  # pragma: no cover - Kaggle images ship torch; stay inert wit
 _AF_KEYS = ("UP", "DOWN", "LEFT", "RIGHT", "SPACE", "ACTION7")
 _AF_MOUSE_RE = _af_re.compile(r"MOUSE\(row=(\d+),\s*col=(\d+)\)")
 _AF_COLORS = "WwgGcBMPRbSYOrNp"  # inference.utils.grid_utils.ARC_COLOR_CHARS
-_AF_MIN_SAMPLES = 24
+_AF_MIN_SAMPLES = 16
 _AF_TRAIN_EVERY = 8
 _AF_TRAIN_SECONDS = 1.0
 _AF_MAX_SAMPLES = 3000
-_AF_WINDOW = 30
+_AF_WINDOW = 20
 _AF_MIN_ACC = 0.8
 _AF_TOP_CLICKS = 6
 _AF_TRAIN_LOCK = _af_threading.Lock()
@@ -193,7 +193,7 @@ class _AfLearner:
 
 
 def _af_candidates(grid):
-    """One representative cell per same-color 4-connected component (at most 2 per (color, size)), skipping huge ones."""
+    """One representative cell per same-color 4-connected component (at most 2 per (color, size)), skipping regions over 5% of the board."""
     rows = len(grid)
     cols = len(grid[0]) if rows else 0
     seen = [[False] * cols for _ in range(rows)]
@@ -212,7 +212,7 @@ def _af_candidates(grid):
                     if 0 <= nr < rows and 0 <= nc < cols and not seen[nr][nc] and grid[nr][nc] == color:
                         seen[nr][nc] = True
                         stack.append((nr, nc))
-            if len(cells) > rows * cols * 0.15:
+            if len(cells) > rows * cols * 0.05:   # background regions: clicking them is rarely the point
                 continue
             key = (color, len(cells))
             per[key] = per.get(key, 0) + 1
