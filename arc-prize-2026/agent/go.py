@@ -37,7 +37,7 @@ def run(cmd: list[str]) -> subprocess.CompletedProcess:
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--variant", choices=("m2", "m3", "lean", "d1", "d2", "base"), default="m2")
+    ap.add_argument("--variant", choices=("m2", "m3", "lean", "d1", "d2", "d3", "base"), default="m2")
     ap.add_argument("--phase-a", choices=("smoke", "full"), default="smoke")
     ap.add_argument("--run", default="1")
     ap.add_argument("--status", action="store_true")
@@ -78,12 +78,14 @@ def main() -> None:
             blob = "".join(p.read_text(errors="ignore") for p in logdir.glob("*.log")) if logdir.exists() else ""
             marks = ["THUI_A5_PROFILE ok",
                      "OURS_GRAFTS none" if args.variant == "base" else f"OURS_GRAFTS ok variant={args.variant}"]
-            if args.variant in ("m2", "m3", "lean", "d1", "d2"):
+            if args.variant in ("m2", "m3", "lean", "d1", "d2", "d3"):
                 marks += ["OURS_NOTE_FILL ok"]
-            if args.variant in ("d1", "d2"):
+            if args.variant in ("d1", "d2", "d3"):
                 marks += ["OURS_AFFORDANCE ok"]
-            if args.variant == "d2":
+            if args.variant in ("d2", "d3"):
                 marks += ["OURS_LEVEL_CARRY ok"]
+            if args.variant == "d3":
+                marks += ["OURS_STALL_BREAKER ok"]
             if args.variant in ("m2", "m3"):
                 marks += ["OURS_PROMPT_EXTRAS ok"]
             if args.variant == "m3":
