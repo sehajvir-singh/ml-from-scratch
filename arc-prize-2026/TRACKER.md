@@ -18,10 +18,10 @@ Updated: 2026-09-25 20:40 UTC. The per-submission log is [`agent/LEDGER.md`](age
 |---|---|---|---|
 | Sep 25 | m2 smoke r1 | Submitted | **3.41** |
 | Sep 26 | m2 (resubmit same version) | Submitted | **4.07** (best so far) |
-| Sep 27 | **m3** (first draw of the keep-on-death build) | Submitted 07:05 UTC, scoring | pending |
+| Sep 27 | **m3** (first draw of the keep-on-death build) | Submitted 07:05 UTC | **2.93** |
 | Sep 28 | **lean** (note_fill only; tests whether our prompt extras hurt) | | |
 | Sep 29 | **d1** (lean + in-game action-effect CNN; Depth Engine part 1) | | |
-| Sep 30 | lean or d1 (2nd draw, whichever needs it); watch whether Tong Hui Kang or others publish; hold ours | | |
+| Sep 30 | **d2** (d1 + level carry-over); watch whether Tong Hui Kang or others publish; hold ours | | |
 
 ## Leaderboard snapshot (2026-09-27 13:32 UTC, from the CLI download)
 

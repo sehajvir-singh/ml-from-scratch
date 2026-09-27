@@ -52,3 +52,24 @@ which part of the engine matters most, and it becomes the data for the Paper Tra
 - **Gate:** a hint appears only when predict-then-learn accuracy over the last 30 actions is at least 80% and
   beats always guessing the majority label.
 - **Not yet known:** whether this raises the hidden score. That needs Kaggle draws.
+
+## Census results (2026-09-27): base B81, all 25 public games at the production clock (7,920 s per game)
+Raw lines are in `research_notes/census/base_full_r1_2026-09-27.txt`.
+- **Scores:** public-25 mean 8.24, median 3.57. Every game ended when the clock ran out (`gave_up`).
+- **Levels cleared:** 0 levels in 3 games, 1 in 12, 2 in 4, 3 in 2, 4 in 4. Most games stop at level 1.
+- **What limits each game:** the depth cap in 14 games, efficiency in 11. The thesis holds more weakly than the
+  3-game smoke suggested. Efficiency matters too, mainly through a few catastrophic levels (ft09 level 4 took 360
+  actions against a human's 28, losing about 24 points in that game).
+- **Counterfactuals on the public 25:**
+  - perfect efficiency on the levels already cleared: 8.24 -> 10.50 (+2.3);
+  - one more level cleared in every game (at the cap): 8.24 -> **19.92 (+11.7)**.
+  - Depth is still worth about 5x more than efficiency.
+- **New finding: thrashing on the level in progress.** When the clock ran out, the unfinished level had often
+  already taken far more actions than a human needs for the whole level: vc33 264 vs 61, sc25 254 vs 32, s5i5 218
+  vs 89, su15 145 vs 42, g50t 148 vs 78, cd82 129 vs 55. Even a late clear there would score close to zero
+  ((61/264)^2 = 0.05), and the time is gone. This points to part 3 of the engine: detect stalls and change
+  strategy (a new hypothesis, a reset, or systematic exploration) instead of repeating.
+- **Hidden-score context:** m-series draws are 3.41, 4.07 and 2.93 (mean 3.47), below B81's mean of 4.19. That
+  supports dropping the prompt extras, which the lean draw on Sep 28 tests.
+- **d2 smoke:** tn36 cleared 2 levels (10.71), the first time in 5 runs of that game (m2, m3, d1 and the census all
+  cleared 1). It is only one game and could be noise, but it points the right way.
