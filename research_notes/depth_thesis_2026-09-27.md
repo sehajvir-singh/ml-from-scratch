@@ -37,3 +37,18 @@ which part of the engine matters most, and it becomes the data for the Paper Tra
   can tell.
 - So far only 3 games have been analysed.
 - The CNN needs CPU time and must not slow the LLM down.
+
+## Part 1 built (2026-09-27): `grafts/affordance.py`, variant `d1`
+- **Model:** a small CNN (3 conv layers, a 64x64 click head and a key head) trained on CPU during each game. It
+  predicts whether an action makes a real change to the board.
+- **Label fix found on real games:** vc33 and tn36 tick a one-cell step counter on the border on every action, so
+  the harness's `board_changed` flag is almost always true. A diff of at most 3 collinear cells near the border
+  counts as a timer tick, not an effect.
+- **Offline test:** the synthetic "red is clickable" rule was learned in about 260 actions, independent of position.
+- **Real games with a mock model making random moves** (vc33, tn36, ls20; 200 actions each):
+  - 593 actions observed, 202 of them real effects; 65 trainings; 184 prompts carried a hint; 0 errors.
+  - On tn36 the top hints named the 3-cell white objects. In the logs, every click on white changed the board
+    (12 of 12), while clicks on the dominant colors mostly did not.
+- **Gate:** a hint appears only when predict-then-learn accuracy over the last 30 actions is at least 80% and
+  beats always guessing the majority label.
+- **Not yet known:** whether this raises the hidden score. That needs Kaggle draws.

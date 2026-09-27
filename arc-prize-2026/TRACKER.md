@@ -20,8 +20,8 @@ Updated: 2026-09-25 20:40 UTC. The per-submission log is [`agent/LEDGER.md`](age
 | Sep 26 | m2 (resubmit same version) | Submitted | **4.07** (best so far) |
 | Sep 27 | **m3** (first draw of the keep-on-death build) | Submitted 07:05 UTC, scoring | pending |
 | Sep 28 | **lean** (note_fill only; tests whether our prompt extras hurt) | | |
-| Sep 29 | m3 (2nd draw) | | |
-| Sep 30 | lean (2nd draw); watch whether Tong Hui Kang or others publish; hold ours | | |
+| Sep 29 | **d1** (lean + in-game action-effect CNN; Depth Engine part 1) | | |
+| Sep 30 | lean or d1 (2nd draw, whichever needs it); watch whether Tong Hui Kang or others publish; hold ours | | |
 
 ## Leaderboard snapshot (2026-09-27 13:32 UTC, from the CLI download)
 
@@ -40,6 +40,9 @@ Updated: 2026-09-25 20:40 UTC. The per-submission log is [`agent/LEDGER.md`](age
 - [x] First hidden score recorded: 3.41
 - [x] m3 build: m2 + keep-on-death graft (tested offline and on the real engine)
 - [ ] fp8-KV / 3-wave build (needs the vLLM PR #55557 check)
+- [x] Depth census launched (base, full 25-game Phase A, 2026-09-27)
+- [x] d1 build: grafts/affordance.py, 3 offline tests; e2e on vc33/tn36/ls20 with a mock model: 593 actions observed, 65 trainings, 184 prompts with hints, 0 errors
+- [ ] d1 Phase A smoke on Kaggle (after the census finishes)
 - [ ] Paper Track draft
 
 ## Open questions
