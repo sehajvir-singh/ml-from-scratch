@@ -20,7 +20,7 @@ OURS_LEVEL_CARRY_COUNTS = {"carried": 0, "empty": 0, "errors": 0}
 
 
 def _lc_clip(text, limit):
-    text = " ".join(str(text or "").split())
+    text = " ".join(str(text or "").split()).rstrip(" .;")
     return text if len(text) <= limit else text[: limit - 3].rstrip() + "..."
 
 
