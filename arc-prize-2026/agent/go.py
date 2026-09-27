@@ -90,6 +90,10 @@ def main() -> None:
                 if line.startswith("[finished]"):
                     print("  " + line.split("note=")[0])
             print(f"  (full log in {logdir})")
+            logs = [str(p) for p in logdir.glob("*.log")] if logdir.exists() else []
+            if logs:
+                print("\nDepth analysis (tools/depth_ladder.py):", flush=True)
+                subprocess.run([sys.executable, str(HERE / "tools" / "depth_ladder.py"), *logs])
             print(f"\nIf all OK: open https://www.kaggle.com/code/{ref} -> 'Submit to Competition' -> submission.parquet.")
             return
         if "error" in low or "cancel" in low:
