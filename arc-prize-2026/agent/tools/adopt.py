@@ -1,12 +1,14 @@
 """Adopt a published Kaggle notebook (e.g. a top team's Milestone #2 release) and add our grafts to it.
 
-    python3 tools/adopt.py <owner>/<kernel-slug> [--no-grafts] [--run 1]
+    python3 tools/adopt.py <owner>/<kernel-slug> [--variant d3|d2|d1|lean] [--no-grafts] [--run 1]
 
 Steps:
   1. `kaggle kernels pull -m` the notebook and its metadata into out/adopt-<slug>/.
   2. Report what it runs: model, datasets, accelerator, whether it uses the Duck/TAAF solver.
-  3. If the Duck `tool_agent` import anchor is present, paste our grafts right after it
-     (same code as build_notebook.py's m2 variant); otherwise leave the notebook unchanged and say so.
+  3. If the Duck `tool_agent` import anchor is present, paste our grafts right after it (default: the Depth
+     Engine, variant d3). Each graft is wrapped so that if the published harness changed the internals it
+     patches, that graft prints OURS_<NAME> skipped and switches itself off instead of crashing the notebook.
+     Without an anchor the notebook is left unchanged and the tool says so.
   4. Rewrite the metadata to your account (private) so `kaggle kernels push -p out/adopt-<slug>-ours` works.
 Always push the UNCHANGED copy (out/adopt-<slug>) once as a control: a published notebook's own score
 is the baseline our grafts must beat.
@@ -31,6 +33,29 @@ ANCHORS = (
 )
 
 
+GRAFTS = {
+    "lean": ["note_fill.py"],
+    "d1": ["note_fill.py", "affordance.py"],
+    "d2": ["note_fill.py", "affordance.py", "level_carry.py"],
+    "d3": ["note_fill.py", "affordance.py", "level_carry.py", "stall_breaker.py"],
+}
+
+
+def safe_graft_block(variant: str) -> str:
+    """Each graft runs in its own try/except, so one that no longer matches the published harness is skipped."""
+    parts = ["# ======== ours: grafts (github.com/sehajvir-singh/ml-from-scratch, arc-prize-2026/agent/grafts) ========\n"]
+    for name in GRAFTS[variant]:
+        src = (build_notebook.GRAFTS / name).read_text()
+        compile(src, name, "exec")
+        tag = name[:-3].upper()
+        parts.append(
+            f"try:\n    exec(compile({src!r}, {name!r}, 'exec'), globals())\n"
+            f"except Exception as _ours_exc:\n    print('OURS_{tag} skipped', type(_ours_exc).__name__, _ours_exc, flush=True)\n"
+        )
+    parts.append(f'print("OURS_GRAFTS ok variant={variant} (adopted)", flush=True)\n')
+    return "".join(parts)
+
+
 def username() -> str:
     cfg = Path.home() / ".kaggle" / "kaggle.json"
     return json.loads(cfg.read_text())["username"]
@@ -39,6 +64,8 @@ def username() -> str:
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("kernel", help="owner/slug of the published notebook")
+    ap.add_argument("--variant", default="d3", choices=("d3", "d2", "d1", "lean"),
+                    help="which graft set to add (default d3: note_fill + affordance + level_carry + stall_breaker)")
     ap.add_argument("--no-grafts", action="store_true")
     ap.add_argument("--run", default="1")
     args = ap.parse_args()
@@ -66,8 +93,7 @@ def main() -> None:
         new = json.loads(json.dumps(nb))
         applied = False
         if graft:
-            flags = {"scoring": True, "pacing": True, "clicks": True}
-            block = build_notebook.graft_block("m2", flags)
+            block = safe_graft_block(args.variant)
             for cell in new["cells"]:
                 s = "".join(cell["source"])
                 anchor = next((a for a in ANCHORS if a in s), None)
@@ -79,7 +105,7 @@ def main() -> None:
                     break
             if not applied:
                 print(f"\n!! no tool_agent import anchor found; {out.name} is left unchanged. Send the notebook to Claude.")
-        name = f"adopt-{slug[:40]}{variant}-r{args.run}"
+        name = f"adopt-{slug[:30]}{variant}-r{args.run}"
         m = dict(meta, id=f"{me}/{name}", title=name, code_file=nb_path.name, is_private=True)
         (out / nb_path.name).write_text(json.dumps(new, indent=1))
         (out / "kernel-metadata.json").write_text(json.dumps(m, indent=2))
