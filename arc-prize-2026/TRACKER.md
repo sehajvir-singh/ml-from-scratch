@@ -51,7 +51,7 @@ Updated: 2026-09-25 20:40 UTC. The per-submission log is [`agent/LEDGER.md`](age
 - [x] Depth census launched (base, full 25-game Phase A, 2026-09-27)
 - [x] d1 build: grafts/affordance.py, 3 offline tests; e2e on vc33/tn36/ls20 with a mock model: 593 actions observed, 65 trainings, 184 prompts with hints, 0 errors
 - [x] d1 Phase A smoke on Kaggle: torch 2.13.0+cu130 present, learner loaded, hints shown on tn36 and vc33 (accuracy 87–93%); vc33 3/7 (21.43), tn36 1/7 (3.57), bp35 1/9 (0.90). Tweaked after: candidates at most 5% of the board, hints from about 40 actions
-- [ ] Paper Track draft
+- [x] Paper Track draft v0.1 (`paper/DEPTH_THESIS_PAPER.md`); fill hidden-draw TODOs as scores land
 
 ## Open questions
 
