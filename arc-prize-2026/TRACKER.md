@@ -33,6 +33,7 @@ Updated: 2026-09-25 20:40 UTC. The per-submission log is [`agent/LEDGER.md`](age
 
 - #1 Tufa Labs **45.33** (27.29 on Sep 27, 18.81 on Sep 25), #2 Yi-Chia Chen 36.73, #3 Daniel Franzen 26.55,
   #4 Lord Han Solo 22.24, #5 Tong Hui Kang 20.53. On the depth ladder, 45 is roughly 4–5 levels cleared in every game.
+- **Us: rank 55** with 5.28 (up from 175 at 4.07 on Sep 27).
 - Milestone #2 closes Sep 30. If the winners publish as the Milestone #1 winners did, adopt their notebook
   immediately (`tools/adopt.py`) and put the Depth Engine on top.
 
