@@ -29,6 +29,13 @@ Updated: 2026-09-25 20:40 UTC. The per-submission log is [`agent/LEDGER.md`](age
 - #1 Tufa Labs 27.29 (up from 18.81 on Sep 25), #2 Daniel Franzen 21.01 (up from 16.68). The top is moving fast.
 - Check again with: `kaggle competitions leaderboard -c arc-prize-2026-arc-agi-3 --download -p lb`
 
+## Leaderboard snapshot (2026-09-29, pasted by the user)
+
+- #1 Tufa Labs **45.33** (27.29 on Sep 27, 18.81 on Sep 25), #2 Yi-Chia Chen 36.73, #3 Daniel Franzen 26.55,
+  #4 Lord Han Solo 22.24, #5 Tong Hui Kang 20.53. On the depth ladder, 45 is roughly 4–5 levels cleared in every game.
+- Milestone #2 closes Sep 30. If the winners publish as the Milestone #1 winners did, adopt their notebook
+  immediately (`tools/adopt.py`) and put the Depth Engine on top.
+
 ## Build status
 
 - [x] Research reports: winning strategy, and path to the top five
