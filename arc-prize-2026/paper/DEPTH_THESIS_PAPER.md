@@ -130,8 +130,8 @@ We get one scored draw per day, and draws of the same notebook vary by roughly Â
 |---|---|---|
 | B81 baseline (external draws plus ours) | 4.50, 3.86, 3.03, 5.36, 5.28 | 4.41 |
 | m-series (generic prompt extras) | 3.41, 4.07, 2.93 | 3.47 |
-| d2 (learner + carry-over) | **[TODO]** | |
-| d3 (+ stall breaker) | **[TODO]** | |
+| d2 (learner + carry-over) | 4.79 | 4.79 (1 draw; inside the B81 range, inconclusive) |
+| d3 (+ stall breaker) | not submitted; superseded by the move to Franzen's harness | |
 
 **[TODO]**: add a significance statement (Welch's t-test or bootstrap) once there are at least 3 draws per arm.
 
