@@ -41,3 +41,30 @@ about 7 GiB of KV cache.
    - depth-aware use of time near the end.
 3. **Paper.** Independent convergence (the border-tick label, and stall-aware compute) supports the Depth Thesis.
    Cite his write-up.
+
+## Franzen's own Phase A run (the notebook output the user uploaded; run on 2026-09-30, 34 min)
+- **Setup:** the cells are identical to the mirror. Image: Python 3.12.13, SGLang 0.5.19, torch 2.13 + cu130,
+  RTX PRO 6000 Blackwell. The harness patch applied cleanly.
+- **Demo mode:** 10 public games, all at once, **25 minutes each** (our census gave 132 minutes per game).
+- **Same 10 games, our B81 census (132 min/game) vs his run (25 min/game):**
+
+| Game | B81 census | Franzen |
+|---|---|---|
+| ar25 | 27.78 (4 levels) | 41.67 (5 levels) |
+| ft09 | 23.48 (4) | 47.62 (4) |
+| lp85 | 24.54 (4) | 41.67 (5) |
+| r11l | 14.29 (2) | 14.29 (2) |
+| re86 | 23.40 (4) | 16.67 (3) |
+| sb26 | 2.78 (1) | **93.34 (8, won)** |
+| sc25 | 12.47 (2) | 28.57 (3) |
+| tr87 | 4.76 (1) | 47.62 (4) |
+| tu93 | 5.14 (3) | 13.07 (3) |
+| vc33 | 15.60 (3) | 21.08 (3) |
+| **Mean** | **15.42 (2.8 levels)** | **36.56 (4.0 levels)** |
+
+- **He scores 2.4× higher with about one fifth of the clock per game.** He also reaches about the same number of
+  actions per game (about 130) in 25 minutes as B81 did in 132.
+- **Depth explains most of the gain:** 4.0 levels against 2.8. That fits the Depth Thesis.
+- **These 10 demo games are easier than the hidden set:** 36.6 here against 27.89 on the leaderboard.
+- **One problem shows in the log:** 5 analyzer requests timed out on the server, at a read timeout of 5–37 s.
+  Work was lost there.
