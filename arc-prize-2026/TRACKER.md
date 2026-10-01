@@ -37,6 +37,14 @@ Updated: 2026-09-25 20:40 UTC. The per-submission log is [`agent/LEDGER.md`](age
 - Milestone #2 closes Sep 30. If the winners publish as the Milestone #1 winners did, adopt their notebook
   immediately (`tools/adopt.py`) and put the Depth Engine on top.
 
+## Milestone #2 releases (2026-10-01)
+
+- Published: Franzen 27.89, Lord Han Solo 23.84, sirikilohit 22.53. Tufa and Yi-Chia Chen did not publish.
+  Notes are in `research_notes/milestone2_releases_2026-10-01.md`.
+- **Next submission: Franzen's notebook unchanged** (`dfranzen/arc-agi-3-milestone-2-solution`). Our grafts do not
+  port: he switched the world-model note off and already has border-aware change detection and a stall-aware
+  scheduler.
+
 ## Build status
 
 - [x] Research reports: winning strategy, and path to the top five

@@ -106,7 +106,10 @@ def main() -> None:
             if not applied:
                 print(f"\n!! no tool_agent import anchor found; {out.name} is left unchanged. Send the notebook to Claude.")
         name = f"adopt-{slug[:30]}{variant}-r{args.run}"
-        m = dict(meta, id=f"{me}/{name}", title=name, code_file=nb_path.name, is_private=True)
+        # A pulled kernel's metadata may omit the accelerator; the scored rerun needs the RTX Pro 6000, offline.
+        m = dict(meta, id=f"{me}/{name}", title=name, code_file=nb_path.name, is_private=True,
+                 machine_shape="NvidiaRtxPro6000", enable_gpu=True, enable_internet=False)
+        m.pop("id_no", None)   # the source kernel's numeric id would point the push at the owner's kernel
         (out / nb_path.name).write_text(json.dumps(new, indent=1))
         (out / "kernel-metadata.json").write_text(json.dumps(m, indent=2))
         print(f"built {out.relative_to(HERE)} (grafts {'applied' if applied else 'none'}) -> kaggle kernels push -p {out}")
