@@ -61,9 +61,13 @@ def main() -> None:
     for _, r in runs:
         lv += f"{sum(r[g]['levels'] for g in common) / max(1, len(common)):22.2f}"
     print(lv)
-    for name, r in runs:
+    for (name, r), p in zip(runs, sys.argv[1:]):
         kinds = sum((x["kinds"] for x in r.values()), collections.Counter())
         print(f"\n{name}: action types {dict(kinds.most_common())}")
+        for log in Path(p).rglob("serve*.log"):   # server memory facts, if the log was saved
+            for line in log.read_text(errors="ignore").splitlines():
+                if any(k in line for k in ("max_total_num_tokens", "KV Cache is allocated", "avail mem", "OutOfMemory")):
+                    print("   server:", line.strip()[:200])
     print("\nRule: one 10-game run varies by several points; only a gain of about 3+ in the mean counts as a signal.")
 
 

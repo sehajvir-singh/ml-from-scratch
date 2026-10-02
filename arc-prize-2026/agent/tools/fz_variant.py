@@ -1,6 +1,6 @@
 """Build a variant of Franzen's Milestone #2 notebook that changes only its configuration.
 
-    python3 tools/fz_variant.py NAME [--set KEY=VALUE ...] [--minutes 25] [--all-games]
+    python3 tools/fz_variant.py NAME [--set KEY=VALUE ...] [--server KEY=VALUE ...] [--minutes 25] [--all-games]
 
 Reads the unchanged copy pulled by `tools/adopt.py dfranzen/arc-agi-3-milestone-2-solution --no-grafts`
 (out/adopt-arc-agi-3-milestone-2-solution) and writes out/fz-NAME/, ready for `kaggle kernels push -p out/fz-NAME`.
@@ -8,14 +8,17 @@ Reads the unchanged copy pulled by `tools/adopt.py dfranzen/arc-agi-3-milestone-
 What changes, and nothing else:
   --set KEY=VALUE   harness environment overrides (e.g. EXPOSE_RESET=on, ARC3_LEVEL_INVENTORY=1). They are applied
                     after the notebook's own settings, so they hold in Phase A AND in the scored rerun.
+  --server KEY=VALUE  model-server overrides of the notebook's CFG dict (e.g. MAXREQ=12, MAMBA_CACHE=72,
+                    MEMFRAC=0.97, CUDAGRAPH_MAXBS=12). Values are Python literals. Applies to Phase A AND the rerun.
   --minutes M       Phase A only: minutes per demo game (default 25, as in Franzen's own demo run).
   --all-games       Phase A only: play all 25 public games instead of his 10-game demo subset.
 The default Phase A (10 demo games, 25 min) is directly comparable with Franzen's run (mean 36.56) and ours.
-Read results with: python3 tools/depth_ladder.py out/logs-fz-NAME/*.log
+Read results with: python3 tools/fz_results.py out/logs-fz-NAME [more runs ...]
 """
 from __future__ import annotations
 
 import argparse
+import ast
 import json
 import re
 import sys
@@ -26,9 +29,11 @@ SRC = HERE / "out" / "adopt-arc-agi-3-milestone-2-solution"
 ENV_ANCHOR = "os.environ.update({k: str(v) for k,v in setup_env.items()})"
 DEMO_MINUTES = "bm.solver.max_runtime_s_per_game = 25*60"
 DEMO_EXCLUDED = "demo_excluded_games = [] if TRUE_SUBMISSION else ["
+SERVER_ANCHOR = 'VENV = f"{PREFIX}/venv"'
 
 
-def build(name: str, sets: dict[str, str], minutes: int, all_games: bool, owner: str) -> Path:
+def build(name: str, sets: dict[str, str], minutes: int, all_games: bool, owner: str,
+          server: dict | None = None) -> Path:
     nb_path = next(SRC.glob("*.ipynb"))
     nb = json.loads(nb_path.read_text())
     meta = json.loads((SRC / "kernel-metadata.json").read_text())
@@ -37,6 +42,17 @@ def build(name: str, sets: dict[str, str], minutes: int, all_games: bool, owner:
     cfg_i = next(i for i, c in enumerate(cells) if DEMO_MINUTES in "".join(c["source"]))
 
     changed = []
+    if server:
+        srv_i = next(i for i, c in enumerate(cells) if SERVER_ANCHOR in "".join(c["source"]))
+        s = "".join(cells[srv_i]["source"])
+        assert s.count(SERVER_ANCHOR) == 1 and "CFG = dict(" in s
+        unknown = [k for k in server if not re.search(rf"^\s+{k}=", s, re.M)]
+        assert not unknown, f"not in the notebook's CFG: {unknown}"
+        block = ("# ---- ours: server overrides (tools/fz_variant.py) ----\n"
+                 f"CFG.update({server!r})\n"
+                 f"print('OURS_FZ_SERVER {name}', {server!r}, flush=True)\n")
+        cells[srv_i]["source"] = s.replace(SERVER_ANCHOR, block + SERVER_ANCHOR).splitlines(keepends=True)
+        changed.append(srv_i)
     if sets:
         s = "".join(cells[env_i]["source"])
         assert s.count(ENV_ANCHOR) == 1
@@ -67,7 +83,7 @@ def build(name: str, sets: dict[str, str], minutes: int, all_games: bool, owner:
              machine_shape="NvidiaRtxPro6000", enable_gpu=True, enable_internet=False)
     m.pop("id_no", None)
     (out / "kernel-metadata.json").write_text(json.dumps(m, indent=2))
-    print(f"built out/{slug}: cells changed {sorted(set(changed))}; overrides {sets or 'none'}; "
+    print(f"built out/{slug}: cells changed {sorted(set(changed))}; overrides {sets or 'none'}; server {server or 'none'}; "
           f"Phase A {'25' if all_games else '10'} games x {minutes} min")
     print(f"push:   kaggle kernels push -p out/{slug}")
     print(f"status: kaggle kernels status {owner}/{slug}")
@@ -78,6 +94,7 @@ def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("name", help="short variant name, e.g. reset")
     ap.add_argument("--set", action="append", default=[], metavar="KEY=VALUE")
+    ap.add_argument("--server", action="append", default=[], metavar="KEY=VALUE")
     ap.add_argument("--minutes", type=int, default=25)
     ap.add_argument("--all-games", action="store_true")
     ap.add_argument("--owner", default=None, help="Kaggle username (default: from ~/.kaggle/kaggle.json)")
@@ -87,8 +104,9 @@ def main() -> None:
     if not re.fullmatch(r"[a-z0-9-]{1,40}", args.name):
         sys.exit("name: lowercase letters, digits and dashes only")
     sets = dict(kv.split("=", 1) for kv in args.set)
+    server = {k: ast.literal_eval(v) for k, v in (kv.split("=", 1) for kv in args.server)}
     owner = args.owner or json.loads((Path.home() / ".kaggle" / "kaggle.json").read_text())["username"]
-    build(args.name, sets, args.minutes, args.all_games, owner)
+    build(args.name, sets, args.minutes, args.all_games, owner, server)
 
 
 if __name__ == "__main__":
