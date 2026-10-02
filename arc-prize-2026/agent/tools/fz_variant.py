@@ -1,6 +1,6 @@
 """Build a variant of Franzen's Milestone #2 notebook that changes only its configuration.
 
-    python3 tools/fz_variant.py NAME [--set KEY=VALUE ...] [--server KEY=VALUE ...] [--minutes 25] [--all-games]
+    python3 tools/fz_variant.py NAME [--set KEY=VALUE ...] [--server KEY=VALUE ...] [--graft NAME ...] [--minutes 25] [--all-games]
 
 Reads the unchanged copy pulled by `tools/adopt.py dfranzen/arc-agi-3-milestone-2-solution --no-grafts`
 (out/adopt-arc-agi-3-milestone-2-solution) and writes out/fz-NAME/, ready for `kaggle kernels push -p out/fz-NAME`.
@@ -10,6 +10,8 @@ What changes, and nothing else:
                     after the notebook's own settings, so they hold in Phase A AND in the scored rerun.
   --server KEY=VALUE  model-server overrides of the notebook's CFG dict (e.g. MAXREQ=12, MAMBA_CACHE=72,
                     MEMFRAC=0.97, CUDAGRAPH_MAXBS=12). Values are Python literals. Applies to Phase A AND the rerun.
+  --graft NAME      add one of our grafts for Franzen's harness (grafts/NAME.py, e.g. solved_memory_fz) at the top of
+                    the customization cell. Each runs in try/except and prints OURS_<NAME> ok|skipped. Applies to both.
   --minutes M       Phase A only: minutes per demo game (default 25, as in Franzen's own demo run).
   --all-games       Phase A only: play all 25 public games instead of his 10-game demo subset.
 The default Phase A (10 demo games, 25 min) is directly comparable with Franzen's run (mean 36.56) and ours.
@@ -60,7 +62,7 @@ DRAFT_MODEL_DIR = _ours_resolve(DRAFT_MODEL_DIR)
 
 
 def build(name: str, sets: dict[str, str], minutes: int, all_games: bool, owner: str,
-          server: dict | None = None) -> Path:
+          server: dict | None = None, grafts: list[str] | None = None) -> Path:
     nb_path = next(SRC.glob("*.ipynb"))
     nb = json.loads(nb_path.read_text())
     meta = json.loads((SRC / "kernel-metadata.json").read_text())
@@ -93,6 +95,18 @@ def build(name: str, sets: dict[str, str], minutes: int, all_games: bool, owner:
                  f"print('OURS_FZ_VARIANT {name}', {json.dumps(sets)}, flush=True)\n")
         cells[env_i]["source"] = s.replace(ENV_ANCHOR, block + ENV_ANCHOR).splitlines(keepends=True)
         changed.append(env_i)
+    if grafts:
+        s = "".join(cells[cfg_i]["source"])
+        block = ["# ---- ours: grafts for Franzen's harness (tools/fz_variant.py) ----\n",
+                 "import inference.agent.tool_agent as _tool_agent\n"]
+        for g in grafts:
+            src = (HERE / "grafts" / f"{g}.py").read_text()
+            compile(src, g, "exec")
+            block.append(f"try:\n    exec(compile({src!r}, {g + '.py'!r}, 'exec'), globals())\n"
+                         f"except Exception as _ours_exc:\n"
+                         f"    print('OURS_{g.upper()} skipped', type(_ours_exc).__name__, _ours_exc, flush=True)\n")
+        cells[cfg_i]["source"] = ("".join(block) + "\n" + s).splitlines(keepends=True)
+        changed.append(cfg_i)
     if minutes != 25 or all_games:
         s = "".join(cells[cfg_i]["source"])
         assert s.count(DEMO_MINUTES) == 1
@@ -115,7 +129,7 @@ def build(name: str, sets: dict[str, str], minutes: int, all_games: bool, owner:
              machine_shape="NvidiaRtxPro6000", enable_gpu=True, enable_internet=False)
     m.pop("id_no", None)
     (out / "kernel-metadata.json").write_text(json.dumps(m, indent=2))
-    print(f"built out/{slug}: cells changed {sorted(set(changed))}; overrides {sets or 'none'}; server {server or 'none'}; "
+    print(f"built out/{slug}: cells changed {sorted(set(changed))}; overrides {sets or 'none'}; server {server or 'none'}; grafts {grafts or 'none'}; "
           f"Phase A {'25' if all_games else '10'} games x {minutes} min")
     print(f"push:   kaggle kernels push -p out/{slug}")
     print(f"status: kaggle kernels status {owner}/{slug}")
@@ -127,6 +141,7 @@ def main() -> None:
     ap.add_argument("name", help="short variant name, e.g. reset")
     ap.add_argument("--set", action="append", default=[], metavar="KEY=VALUE")
     ap.add_argument("--server", action="append", default=[], metavar="KEY=VALUE")
+    ap.add_argument("--graft", action="append", default=[], metavar="NAME")
     ap.add_argument("--minutes", type=int, default=25)
     ap.add_argument("--all-games", action="store_true")
     ap.add_argument("--owner", default=None, help="Kaggle username (default: from ~/.kaggle/kaggle.json)")
@@ -138,7 +153,10 @@ def main() -> None:
     sets = dict(kv.split("=", 1) for kv in args.set)
     server = {k: ast.literal_eval(v) for k, v in (kv.split("=", 1) for kv in args.server)}
     owner = args.owner or json.loads((Path.home() / ".kaggle" / "kaggle.json").read_text())["username"]
-    build(args.name, sets, args.minutes, args.all_games, owner, server)
+    for g in args.graft:
+        if not (HERE / "grafts" / f"{g}.py").is_file():
+            sys.exit(f"no graft grafts/{g}.py")
+    build(args.name, sets, args.minutes, args.all_games, owner, server, args.graft)
 
 
 if __name__ == "__main__":
