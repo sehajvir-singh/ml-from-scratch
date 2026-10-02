@@ -69,6 +69,22 @@ def main() -> None:
     for _, r in runs:
         lv += f"{sum(r[g]['levels'] for g in common) / max(1, len(common)):22.2f}"
     print(lv)
+    allc = sorted(set.intersection(*[set(r) for _, r in runs]))
+    if len(allc) > len(common):   # e.g. 25-game runs: also compare over every game all runs played
+        line = f"{'mean*':6}{'':14}"
+        for _, r in runs:
+            line += f"{sum(r[g]['score'] for g in allc) / len(allc):22.2f}"
+        print(line + f"   (* over all {len(allc)} games every run played)")
+        lv = f"{'lv*':6}{'':14}"
+        for _, r in runs:
+            lv += f"{sum(r[g]['levels'] for g in allc) / len(allc):22.2f}"
+        print(lv)
+    if len(runs) == 2:   # paired view: per-game difference of the second run against the first
+        (n1, a), (n2, b) = runs
+        diffs = [b[g]["score"] - a[g]["score"] for g in allc]
+        wins = sum(d > 0.5 for d in diffs); losses = sum(d < -0.5 for d in diffs)
+        print(f"\npaired {n2} vs {n1} over {len(allc)} games: mean diff {sum(diffs)/len(diffs):+.2f}, "
+              f"better in {wins}, worse in {losses}, same in {len(diffs)-wins-losses}")
     for (name, r), p in zip(runs, dirs):
         kinds = sum((x["kinds"] for x in r.values()), collections.Counter())
         print(f"\n{name}: action types {dict(kinds.most_common())}")
