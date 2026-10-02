@@ -38,7 +38,15 @@ def load(run_dir: Path) -> dict[str, dict]:
 def main() -> None:
     if len(sys.argv) < 2:
         sys.exit(__doc__)
-    runs = [(Path(p).name.replace("logs-", ""), load(Path(p))) for p in sys.argv[1:]]
+    dirs = []
+    for p in sys.argv[1:]:
+        if (Path(p) / "benchmark.json").is_file():
+            dirs.append(p)
+        else:
+            print(f"skipping {p}: no benchmark.json yet (run not finished, or not downloaded)")
+    if not dirs:
+        sys.exit("nothing to compare yet")
+    runs = [(Path(p).name.replace("logs-", ""), load(Path(p))) for p in dirs]
     games = sorted(set(BASELINE) | {g for _, r in runs for g in r})
     head = f"{'game':6}{'franzen':>14}" + "".join(f"{name:>22}" for name, _ in runs)
     print(head)
@@ -61,7 +69,7 @@ def main() -> None:
     for _, r in runs:
         lv += f"{sum(r[g]['levels'] for g in common) / max(1, len(common)):22.2f}"
     print(lv)
-    for (name, r), p in zip(runs, sys.argv[1:]):
+    for (name, r), p in zip(runs, dirs):
         kinds = sum((x["kinds"] for x in r.values()), collections.Counter())
         print(f"\n{name}: action types {dict(kinds.most_common())}")
         for log in Path(p).rglob("serve*.log"):   # server memory facts, if the log was saved
