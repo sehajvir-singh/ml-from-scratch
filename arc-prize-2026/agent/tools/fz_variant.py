@@ -30,6 +30,33 @@ ENV_ANCHOR = "os.environ.update({k: str(v) for k,v in setup_env.items()})"
 DEMO_MINUTES = "bm.solver.max_runtime_s_per_game = 25*60"
 DEMO_EXCLUDED = "demo_excluded_games = [] if TRUE_SUBMISSION else ["
 SERVER_ANCHOR = 'VENV = f"{PREFIX}/venv"'
+PATHS_ANCHOR = "SERVED_MODEL_NAME = 'flashnext'"
+# Two Phase A runs (fz-inventory, fz-reset2) died in 6 s because /kaggle/input/datasets/dfranzen/... was not there.
+# This guard waits briefly for late mounts, falls back to any directory with the same slug, and otherwise prints
+# what IS mounted, so the failure is diagnosable. Inserted in every variant.
+PATHS_GUARD = r"""
+# ---- ours: input-path guard (tools/fz_variant.py) ----
+def _ours_resolve(path, wait_s=120):
+    import glob as _g, os as _o, time as _t
+    slug = path.rstrip('/').split('/datasets/')[-1].split('/')[-1] if '/datasets/' in path else None
+    t0 = _t.time()
+    while True:
+        if _o.path.exists(path):
+            return path
+        if slug:
+            hits = [h for h in _g.glob('/kaggle/input/**/' + slug, recursive=True) if _o.path.isdir(h)]
+            if hits:
+                print('OURS_PATH fallback', path, '->', hits[0], flush=True)
+                return hits[0]
+        if _t.time() - t0 > wait_s:
+            print('OURS_PATH missing', path, '| /kaggle/input has:', sorted(_g.glob('/kaggle/input/*/*'))[:40], flush=True)
+            return path
+        _t.sleep(10)
+WHEELHOUSE_DIR = _ours_resolve(WHEELHOUSE_DIR)
+ORIG_BUNDLE_DIR = _ours_resolve(ORIG_BUNDLE_DIR)
+MODEL_DIR = _ours_resolve(MODEL_DIR)
+DRAFT_MODEL_DIR = _ours_resolve(DRAFT_MODEL_DIR)
+"""
 
 
 def build(name: str, sets: dict[str, str], minutes: int, all_games: bool, owner: str,
@@ -42,6 +69,11 @@ def build(name: str, sets: dict[str, str], minutes: int, all_games: bool, owner:
     cfg_i = next(i for i, c in enumerate(cells) if DEMO_MINUTES in "".join(c["source"]))
 
     changed = []
+    p_i = next(i for i, c in enumerate(cells) if PATHS_ANCHOR in "".join(c["source"]))
+    s = "".join(cells[p_i]["source"])
+    assert s.count(PATHS_ANCHOR) == 1
+    cells[p_i]["source"] = s.replace(PATHS_ANCHOR, PATHS_ANCHOR + "\n" + PATHS_GUARD).splitlines(keepends=True)
+    changed.append(p_i)
     if server:
         srv_i = next(i for i, c in enumerate(cells) if SERVER_ANCHOR in "".join(c["source"]))
         s = "".join(cells[srv_i]["source"])
