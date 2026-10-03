@@ -72,3 +72,17 @@ Phase A demo (10 games × 25 min): 36.56 (his own run).
 - **Counters:** `shown`, `reshown`.
 - **Tests:** 27/27 pass; loads against the real `tool_agent`.
 - **Next run:** `fz-sm2` (v2) paired against a same-day base25.
+
+## Oct 3: combo25 (12 streams + solved memory v1) vs base25b (same day, side by side)
+- **Mean over 25 games:** base25b **14.79** (2.08 levels); combo25 **11.55** (1.76 levels).
+- **Paired:** **−3.25**; better in 7, worse in 12, same in 6.
+- **Without the largest swing** (sb26 −41.7): **−1.64**.
+- **Actions taken:** combo25 played **1,404** actions against base25b's **1,812** (−23%). It ran 12 streams; its
+  graft rewrote the system prompt (10 levels pinned, 0 errors).
+- **Same-notebook noise:** base25 (10.65) and base25b (14.79) are the same notebook, and they differ by **4.1**. The
+  earlier "+3.5" results for mem25 and sm25 were measured against the unlucky base25.
+- **Verdict:**
+  - neither 12 streams nor solved memory v1 has a proven gain, and the combination looks harmful;
+  - the most likely cause is fewer actions, from slower turns: 12 streams sharing the GPU, plus a full prefill after
+    each system-prompt rewrite in v1;
+  - v2 (append) removes the second cause; sm2v25 vs base25c tests it.
