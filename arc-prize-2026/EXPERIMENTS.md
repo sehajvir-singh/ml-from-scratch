@@ -59,3 +59,16 @@ Phase A demo (10 games × 25 min): 36.56 (his own run).
   which inflates both comparisons.
 - **Verdict:** safe, with a weakly positive signal (11 vs 7 games better). Move on to a combined build
   (mem12 + solved memory), tested paired against a **same-day** baseline.
+
+## Oct 3: solved memory made cache-friendly (graft v2, not yet run)
+- **Problem.** Our v1 graft rewrote the system prompt after each cleared level. Franzen measured that changing the
+  start of the prompt drops shared prefix from 99% to 15%, so every clear forced a full prefill of the history.
+  ChatGPT's report flagged this independently.
+- **v2 (default `OURS_SM_MODE=append`):**
+  - the system prompt is never touched;
+  - the solved-levels block is appended to the turn-opener lines once per cleared level;
+  - it is shown again only if the history trim evicted it.
+- **A/B:** `--set OURS_SM_MODE=system` gives v1.
+- **Counters:** `shown`, `reshown`.
+- **Tests:** 27/27 pass; loads against the real `tool_agent`.
+- **Next run:** `fz-sm2` (v2) paired against a same-day base25.

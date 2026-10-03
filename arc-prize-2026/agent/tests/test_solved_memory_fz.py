@@ -1,3 +1,4 @@
+import os
 import types
 import unittest
 from pathlib import Path
@@ -10,12 +11,14 @@ class Frame:
         self.level = level
 
 
-def make_env():
+def make_env(mode="system"):
     calls = []
+    os.environ["OURS_SM_MODE"] = mode
 
     class ToolAgent:
         def __init__(self):
             self._system_prompt = "SYS"
+            self._history_messages = []
 
         def _prepare_auto_diff(self, current_frame, previous_step_summary):
             calls.append((current_frame.level, previous_step_summary))
@@ -36,7 +39,7 @@ class SolvedMemoryTest(unittest.TestCase):
         a._prepare_auto_diff(Frame(1), {"executed_actions": ["RIGHT", "RIGHT", "RIGHT"]})
         a._prepare_auto_diff(Frame(2), {"executed_actions": ["MOUSE(row=3, col=4)"], "level_transition": True})
         self.assertIn("Level 1 (4 actions): RIGHT x3, MOUSE(row=3, col=4)", a._system_prompt)
-        self.assertTrue(a._system_prompt.startswith("SYS\n"))
+        self.assertTrue(a._system_prompt.startswith("SYS\n\n"))
         self.assertNotIn("LEFT", a._system_prompt)
         self.assertNotIn("UP", a._system_prompt)
         # level 2 cleared too: both pinned, base prompt kept once
@@ -76,6 +79,38 @@ class SolvedMemoryTest(unittest.TestCase):
         a._prepare_auto_diff(Frame(2), {"executed_actions": ["UP"], "level_transition": True})
         self.assertIn("501 actions, last 60 shown", a._system_prompt)
         self.assertLess(len(a._system_prompt), 2000)
+
+
+class AppendModeTest(unittest.TestCase):
+    """Default mode: the system prompt never changes (prefix cache); the block rides on the opener lines."""
+
+    def test_shown_once_then_reshown_after_eviction(self):
+        ToolAgent, ns, _ = make_env("append")
+        a = ToolAgent()
+        self.assertEqual(a._prepare_auto_diff(Frame(1), None), ["orig"])
+        a._prepare_auto_diff(Frame(1), {"executed_actions": ["UP", "UP"]})
+        lines = a._prepare_auto_diff(Frame(2), {"executed_actions": ["LEFT"], "level_transition": True})
+        self.assertEqual(lines[0], "orig")
+        self.assertIn("Level 1 (3 actions): UP x2, LEFT", lines[-1])
+        self.assertEqual(a._system_prompt, "SYS")
+        # the opener carrying it is now in history: not repeated
+        a._history_messages = [{"role": "user", "content": [{"type": "text", "text": "x\n" + lines[-1]}]}]
+        self.assertEqual(a._prepare_auto_diff(Frame(2), {"executed_actions": ["DOWN"]}), ["orig"])
+        # trimmed out of history: shown again
+        a._history_messages = [{"role": "user", "content": "later turn"}]
+        again = a._prepare_auto_diff(Frame(2), {"executed_actions": ["DOWN"]})
+        self.assertIn("Level 1 (3 actions)", again[-1])
+        self.assertEqual(ns["OURS_SM_COUNTS"]["shown"], 1)
+        self.assertEqual(ns["OURS_SM_COUNTS"]["reshown"], 1)
+        self.assertEqual(ns["OURS_SM_COUNTS"]["errors"], 0)
+        self.assertEqual(a._system_prompt, "SYS")
+
+    def test_nothing_before_first_clear(self):
+        ToolAgent, ns, _ = make_env("append")
+        a = ToolAgent()
+        for _ in range(3):
+            self.assertEqual(a._prepare_auto_diff(Frame(1), {"executed_actions": ["UP"]}), ["orig"])
+        self.assertEqual(ns["OURS_SM_COUNTS"]["shown"] + ns["OURS_SM_COUNTS"]["reshown"], 0)
 
 
 if __name__ == "__main__":
