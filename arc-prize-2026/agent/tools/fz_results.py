@@ -85,6 +85,10 @@ def main() -> None:
         wins = sum(d > 0.5 for d in diffs); losses = sum(d < -0.5 for d in diffs)
         print(f"\npaired {n2} vs {n1} over {len(allc)} games: mean diff {sum(diffs)/len(diffs):+.2f}, "
               f"better in {wins}, worse in {losses}, same in {len(diffs)-wins-losses}")
+        if len(diffs) > 2:   # one all-or-nothing game can dominate: show the mean without the largest swing
+            big = max(range(len(diffs)), key=lambda i: abs(diffs[i]))
+            rest = diffs[:big] + diffs[big + 1:]
+            print(f"   without the largest swing ({allc[big]} {diffs[big]:+.1f}): mean diff {sum(rest)/len(rest):+.2f}")
     for (name, r), p in zip(runs, dirs):
         kinds = sum((x["kinds"] for x in r.values()), collections.Counter())
         print(f"\n{name}: action types {dict(kinds.most_common())}")

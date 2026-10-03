@@ -35,3 +35,17 @@ Phase A demo (10 games × 25 min): 36.56 (his own run).
   - compare **paired per-game** against a baseline run made the same day;
   - only trust a gain that repeats.
 - Hidden submissions are judged by their average over draws.
+
+## Oct 2–3: first 25-game paired test (base25 vs mem25, 40 min, run side by side)
+- **Mean over 25 games:** base 10.65 (1.68 levels), mem 14.40 (2.00 levels).
+- **Paired:** +3.75; better in 7 games, worse in 4, same in 14.
+- **Almost all of the gain is one game:** sb26 scored 2.78 → 100.00 (+97, which alone is +3.9 on the mean).
+  - Without sb26 the paired difference is **−0.14**.
+  - Other big swings: ft09 +33, re86 −25, tr87 −5, sc25 −19.
+- **Verdict:** mem12 shows no harm and no proven gain. Keep it, because the hidden run has 110 games and keeps
+  12 slots busy.
+- **Lesson:** single all-or-nothing games dominate the mean. Report the paired mean **without the largest |diff|**,
+  plus the win/loss counts.
+- These 25-game scores (about 10–14) sit far below the 10-game demo (about 49): the 15 extra games are hard, and with
+  25 games sharing 10–12 slots each game got less time, as the low action counts show (g50t 17 and 3 actions, cd82
+  25). Not comparable with the hidden scores.
