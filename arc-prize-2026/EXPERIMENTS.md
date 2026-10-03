@@ -86,3 +86,19 @@ Phase A demo (10 games × 25 min): 36.56 (his own run).
   - the most likely cause is fewer actions, from slower turns: 12 streams sharing the GPU, plus a full prefill after
     each system-prompt rewrite in v1;
   - v2 (append) removes the second cause; sm2v25 vs base25c tests it.
+
+## Oct 3: action counts, and the progress-notice graft (built, not yet run)
+- **Actions over 25 games:**
+  - base25 1,624;
+  - mem25 1,674 (+3%);
+  - sm25 (v1) 1,542 (−5%);
+  - combo25 vs base25b: 1,404 vs 1,812 (−23%).
+- **Reading:** 12 streams do not slow games. v1 costs a little, as expected from re-reading the history after each
+  rewrite. The combination's −23% is probably an interaction or chance.
+- **Decision:** submit mem12 v2 hidden (Oct 4, 00:02 UTC).
+- **New graft `progress_notice_fz`:** counts per level the actions, analysis turns, game overs, distinct boards at
+  turn start, and turns since the last new board. It adds ONE plain-count line to the opener:
+  - at 40 / 80 / 160 / ... actions (`OURS_PN_ACTIONS`);
+  - once when the board has shown nothing new for 4 turns (`OURS_PN_STALE_TURNS`).
+
+  The line contains no advice. It stacks with `solved_memory_fz`. 31 tests pass; loads on the real `tool_agent`.
