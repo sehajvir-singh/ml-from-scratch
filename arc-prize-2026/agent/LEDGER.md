@@ -1,0 +1,21 @@
+# Submission ledger
+
+We get one scored submission per UTC day, and a single hidden draw varies by about ±50%. So record every run
+here, and never judge a change from one draw.
+
+| UTC date | Variant | Kernel (owner/slug, version) | Phase A (smoke/full, OK?) | Public-25 score (full only) | Hidden LB score | Notes |
+|---|---|---|---|---|---|---|
+| 2026-09-25 | m2 | hackersinghrai/arc3-m2-smoke-r1, v1 | smoke OK: 3 games @1800 s: vc33 3/7 (21.43), tn36 1/7 (3.57), bp35 1/9 (0.56); 5 levels, 225 actions; note-fill 10/166, 0 errors. The teardown Traceback is the known upstream one | smoke mean 8.52 (3 games, not comparable to the full 25) | **3.41** | Submitted 2026-09-25 ~21:00 UTC. Scored run succeeded. Inside the B81 range (3.03–5.36) |
+| 2026-09-26 | m2 | hackersinghrai/arc3-m2-smoke-r1, v1 (resubmit) | same notebook as above | – | **4.07** | Second draw of the identical notebook: +0.66 is pure run-to-run noise. m2 mean of 2 draws = 3.74 (B81 mean of 4 = 4.19) |
+| 2026-09-27 | m3 | hackersinghrai/arc3-m3-smoke-r1, v1 | smoke OK: vc33 3/7 (21.43), tn36 1/7 (3.57), bp35 1/9 (1.25; L1 in 28 actions vs 42 on m2); all 4 OURS_* markers incl. KEEP_ON_DEATH and variant=m3 | smoke mean 8.75 (noise-level vs m2 8.52) | **2.93** | Submitted 2026-09-27 07:05 UTC (ref 56601461). The m-series (prompt extras) now reads 3.41 / 4.07 / 2.93, mean 3.47, below B81's 4.19: consistent with Tufa's "extra tools hurt" |
+| 2026-09-29 (planned) | d1 | hackersinghrai/arc3-d1-smoke-r1, v1 | smoke OK: vc33 3/7 (21.43), tn36 1/7 (3.57), bp35 1/9 (0.90); OURS_AFFORDANCE ok (torch 2.13.0+cu130); hints on tn36 and vc33 | – | – | v1 predates the candidate-size and earlier-hint tweak; push v2 before submitting |
+| 2026-09-27 census, **submitted 2026-09-28** | base | hackersinghrai/arc3-base-full-r1, v1 | **full 25-game census** at 7,920 s per game: public-25 mean 8.24, median 3.57; levels cleared 0:3, 1:12, 2:4, 3:2, 4:4 games; all 25 ended on the clock | 8.24 | **5.28** (new best) | Submitted 2026-09-28 12:54 UTC from the website. Plain B81 draws are now 4.50, 3.86, 3.03, 5.36, **5.28** (mean 4.41) against the m-series (prompt extras) 3.41, 4.07, 2.93 (mean 3.47): more evidence the extras hurt |
+| 2026-09-29 (submitted 13:53 UTC) | d2 | hackersinghrai/arc3-d2-smoke-r1, v1 | smoke OK: tn36 **2/7 (10.71)**, the first time any run cleared 2 levels there; vc33 3/7 (20.47); bp35 0/9 (0.00); all markers incl. OURS_LEVEL_CARRY | smoke mean 10.39 (m2 8.52, m3 8.75, d1 8.63; noise-level with 3 games) | **4.79** | Re-push after the affordance tweak before submitting |
+| 2026-09-30 (planned) | d3 | hackersinghrai/arc3-d3-smoke-r1, v2 | smoke OK: vc33 3/7 (20.97) in only 67 actions (L1–3: 20/7, 12/18, 24/44); tn36 1/7 (3.57); bp35 1/9 (**1.70**, best bp35 yet); all 5 markers; level_carry fired 5 times; affordance gave 7 hints; the stall breaker never fired (no level reached 80 actions at this short clock); 0 errors | smoke mean 8.75 | – | Only 184 actions across 3 games (d1: 475). Watch whether the longer prompts slow decisions |
+
+External reference draws on the same chassis:
+- B81, as reported by Thuitanium via tantan0327's SOLUTION.md: 4.50, 3.86, 3.03, 5.36.
+- B81 plus note fill (Thuitanium `thui-a10`, one draw): 3.03.
+| 2026-10-01 | **franzen-m2** (unchanged copy of `dfranzen/arc-agi-3-milestone-2-solution`, public LB 27.89) | hackersinghrai/adopt-arc-agi-3-milestone-2-solution-r1, v1 (pushed 2026-10-01 with `tools/adopt.py --no-grafts`; scriptVersionId 354368112) | Phase A ran on Kaggle | – | **25.78** (rank 115 on 2026-10-01) | Franzen's own demo run on the same 10 games: 36.56 against B81's 15.42 (see research_notes/milestone2_releases_2026-10-01.md) |
+| 2026-10-02 | franzen-m2 draw 2 (unchanged) | hackersinghrai/adopt-arc-agi-3-milestone-2-solution-r1, v1 | – | – | **27.88** | Franzen-copy hidden draws so far: 25.78, 27.88 (mean 26.83) |
+| 2026-10-03 | franzen-m2 draw 3 (unchanged) | same | – | – | **28.32** | 3 draws: 25.78, 27.88, 28.32: mean **27.33**, SD 1.36. Hidden draws are far less noisy than local 25-game runs (SD ~3), so they are our best A/B instrument |
