@@ -18,4 +18,4 @@ External reference draws on the same chassis:
 - B81 plus note fill (Thuitanium `thui-a10`, one draw): 3.03.
 | 2026-10-01 | **franzen-m2** (unchanged copy of `dfranzen/arc-agi-3-milestone-2-solution`, public LB 27.89) | hackersinghrai/adopt-arc-agi-3-milestone-2-solution-r1, v1 (pushed 2026-10-01 with `tools/adopt.py --no-grafts`; scriptVersionId 354368112) | Phase A ran on Kaggle | – | **25.78** (rank 115 on 2026-10-01) | Franzen's own demo run on the same 10 games: 36.56 against B81's 15.42 (see research_notes/milestone2_releases_2026-10-01.md) |
 | 2026-10-02 | franzen-m2 draw 2 (unchanged) | hackersinghrai/adopt-arc-agi-3-milestone-2-solution-r1, v1 | – | – | **27.88** | Franzen-copy hidden draws so far: 25.78, 27.88 (mean 26.83) |
-| 2026-10-03 | franzen-m2 draw 3 (unchanged) | same | – | – | pending | |
+| 2026-10-03 | franzen-m2 draw 3 (unchanged) | same | – | – | **28.32** | 3 draws: 25.78, 27.88, 28.32: mean **27.33**, SD 1.36. Hidden draws are far less noisy than local 25-game runs (SD ~3), so they are our best A/B instrument |
