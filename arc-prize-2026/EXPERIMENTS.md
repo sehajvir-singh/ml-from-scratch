@@ -49,3 +49,13 @@ Phase A demo (10 games × 25 min): 36.56 (his own run).
 - These 25-game scores (about 10–14) sit far below the 10-game demo (about 49): the 15 extra games are hard, and with
   25 games sharing 10–12 slots each game got less time, as the low action counts show (g50t 17 and 3 actions, cd82
   25). Not comparable with the hidden scores.
+
+## Oct 3: sm25 (solved-level memory) vs base25
+- **Mean over 25 games:** 14.19 (1.96 levels) against base 10.65 (1.68 levels).
+- **Paired:** +3.54; better in 11, worse in 7, same in 7.
+- **Without the largest swing** (sb26 +75): **+0.56**.
+- **Graft health:** `OURS_SOLVED_MEMORY ok`, at least 10 levels pinned, 2 deaths handled, 0 errors.
+- **sb26 again:** both variants cleared sb26 and base25 did not. base25's sb26 (2.78) looks like an unlucky draw,
+  which inflates both comparisons.
+- **Verdict:** safe, with a weakly positive signal (11 vs 7 games better). Move on to a combined build
+  (mem12 + solved memory), tested paired against a **same-day** baseline.
