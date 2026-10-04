@@ -102,3 +102,16 @@ Phase A demo (10 games × 25 min): 36.56 (his own run).
   - once when the board has shown nothing new for 4 turns (`OURS_PN_STALE_TURNS`).
 
   The line contains no advice. It stacks with `solved_memory_fz`. 31 tests pass; loads on the real `tool_agent`.
+
+## Oct 4: sm2v25 (solved memory v2, cache-friendly) vs two plain baselines
+- **Mean over 25 games:** sm2v25 **16.95** (2.20 levels); base25c 14.08; base25d 12.90.
+- **Paired vs base25c:** +2.87; better in 6, worse in 5; **+1.09** without the largest swing (ft09 +45.8).
+- **Paired vs base25d:** +4.05; better in 9, worse in 6; **+2.14** without the largest swing (sb26 +50.0).
+- **Actions:** sm2v25 1,839; base25c 1,680; base25d 1,707 (+8%). v1 had cost −5% and combo25 −23%. v2 no longer
+  slows play, as expected from keeping the system prompt fixed.
+- **Graft health:** 50 levels pinned, 49 shown, 4 re-shown after eviction, 5 deaths, 0 errors.
+- **The four plain 25-game runs so far:** 10.65, 14.79, 14.08, 12.90 (mean 13.11, SD ≈ 1.8). sm2v25 is above all of
+  them, about +2 SD. It is the first variant that beats every baseline, and it stays positive without its largest
+  swing in both comparisons.
+- **Verdict:** promote to hidden draws. Submit fz-sm2v25 v1 on Oct 5 and again on Oct 6, then compare with the plain
+  copy's 27.33.
