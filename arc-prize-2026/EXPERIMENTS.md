@@ -115,3 +115,12 @@ Phase A demo (10 games × 25 min): 36.56 (his own run).
   swing in both comparisons.
 - **Verdict:** promote to hidden draws. Submit fz-sm2v25 v1 on Oct 5 and again on Oct 6, then compare with the plain
   copy's 27.33.
+
+## Oct 4: mem12 hidden draw = 20.35 (plain copy: 27.33 ± 1.4)
+- **A clear loss of about 7 points.** The local runs (10-game demo 48.74; 25 games neutral) did not predict it.
+- **Lesson:**
+  - server and memory settings must be judged on the hidden run, which is 110 games over 9 hours with long contexts;
+  - only 3.2 GB of GPU memory was free at MEMFRAC 0.97, which leaves no headroom for long-run spikes.
+- **Rule from now on:** never change server/memory settings without a hidden draw. Grafts that change only prompt
+  text keep Franzen's server settings.
+- sm2v25, pn25 and sp25 all use Franzen's default server settings, so this finding does not affect them.
