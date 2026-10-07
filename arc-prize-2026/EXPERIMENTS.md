@@ -124,3 +124,27 @@ Phase A demo (10 games × 25 min): 36.56 (his own run).
 - **Rule from now on:** never change server/memory settings without a hidden draw. Grafts that change only prompt
   text keep Franzen's server settings.
 - sm2v25, pn25 and sp25 all use Franzen's default server settings, so this finding does not affect them.
+
+## Oct 5–7: pn25 (progress notices) and sp25 (solved memory v2 + progress notices)
+- **Means over 25 games:**
+  - plain runs: 10.65, 14.79, 14.08, 12.90 (mean 13.11);
+  - **sm2v25 16.95**;
+  - pn25 14.50;
+  - sp25 15.33.
+- **pn25:**
+  - paired: +0.43 vs base25c, +1.60 vs base25d;
+  - without the largest swing: +2.02 and −1.34;
+  - wins/losses: 8/5 and 6/6;
+  - **Neutral.**
+- **sp25:**
+  - paired: +1.25 and +2.43;
+  - without the largest swing: +3.29 and −0.48;
+  - **Not better than sm2v25 alone** (15.33 vs 16.95, inside the noise).
+- **Notice frequency:** the progress notices fired rarely (1 notice in the first 115 turns), so a large effect was
+  unlikely either way.
+- **Verdict:** progress notices are not promoted. sm2v25 stays the candidate.
+- **Hidden draws:**
+  - Oct 6: 28.42 (no description; notebook to be confirmed);
+  - Oct 7: sm2v25 submitted.
+- **Next local test:** sm2 + Franzen's built-in `ARC3_DEATH_LEDGER=1`. It shows recorded fatal continuations from
+  the current board state, which is factual evidence. Prompt-only, with no server change.
