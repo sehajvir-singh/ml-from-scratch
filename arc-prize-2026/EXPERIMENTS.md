@@ -148,3 +148,18 @@ Phase A demo (10 games × 25 min): 36.56 (his own run).
   - Oct 7: sm2v25 submitted.
 - **Next local test:** sm2 + Franzen's built-in `ARC3_DEATH_LEDGER=1`. It shows recorded fatal continuations from
   the current board state, which is factual evidence. Prompt-only, with no server change.
+
+## Oct 8: sm2dl25 (solved memory v2 + ARC3_DEATH_LEDGER=1) vs sm2r25 (a repeat of sm2v25)
+- **Means:** sm2dl25 **16.14** (2.16 levels); sm2r25 **12.86** (1.80 levels).
+- **Paired:** **+3.29**; better in 10, worse in 4, same in 11; **+1.64** without the largest swing (ft09 +42.9).
+- **Actions:** 1,674 vs 1,719. The ledger costs no speed.
+- **Repeat of the same notebook:** sm2r25 vs sm2v25 = **−4.09** (12.86 vs 16.95). sm2v25's 16.95 was a lucky run,
+  and a single 25-game run varies by ±3–4.
+- **All runs containing v2:** 16.95, 12.86, 15.33 (+progress notices), 16.14 (+ledger), mean 15.3. The four plain runs
+  average 13.1. That is about +2, t ≈ 1.7: weak evidence. It matches the hidden draws (v2 28.17 vs plain 27.33).
+- **Death ledger:** 10 games better and 4 worse against its same-day v2 run (sign test p ≈ 0.18). **Promising, not
+  proven.** It is prompt-only and is Franzen's own code, so it is safe to promote to a hidden draw.
+- **Plan:**
+  - hidden: Oct 9 sm2dl25 draw 1;
+  - local: repeat sm2dl25 and test + `ARC3_DEATH_REPEAT_GUARD=1`, Franzen's built-in check that blocks replaying
+    a recorded fatal sequence.
