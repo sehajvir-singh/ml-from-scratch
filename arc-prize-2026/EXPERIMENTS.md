@@ -163,3 +163,17 @@ Phase A demo (10 games × 25 min): 36.56 (his own run).
   - hidden: Oct 9 sm2dl25 draw 1;
   - local: repeat sm2dl25 and test + `ARC3_DEATH_REPEAT_GUARD=1`, Franzen's built-in check that blocks replaying
     a recorded fatal sequence.
+
+## Oct 10: sm2dlg25 (v2 + ARC3_DEATH_LEDGER + ARC3_DEATH_REPEAT_GUARD) and hidden draw 2 of sm2v25
+- **sm2dlg25:** mean **21.13** (2.44 levels). This is the highest 25-game mean so far; the previous best was 16.95.
+  - **vs sm2r25 (12.86):** paired **+8.27**; better in 11, worse in 3, same in 11.
+  - **Without the largest swing** (cd82 +88.4): **+4.93**.
+- **sm2dlr25** (a repeat of sm2dl25): status ERROR. Cause not yet known.
+- **Hidden:** sm2v25 draw 2 = **29.25**. The two v2 draws (28.17, 29.25) average 28.71, against the plain copy's 27.33.
+- **Caution:** a single 25-game run varies by ±4 (v2 scored both 16.95 and 12.86). sm2dlg25 still needs a repeat, but
+  +4.9 without its largest swing and 11/3 games is the strongest local signal so far.
+- **Decision:**
+  - submit sm2dlg25 for a hidden draw now;
+  - repeat it locally to confirm.
+  - The repeat guard is Franzen's own harness code. It blocks re-running an action sequence that is already recorded as
+    fatal from the same board state. It is not a server setting.
