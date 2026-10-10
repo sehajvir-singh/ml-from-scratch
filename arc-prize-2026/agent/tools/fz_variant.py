@@ -33,23 +33,34 @@ DEMO_MINUTES = "bm.solver.max_runtime_s_per_game = 25*60"
 DEMO_EXCLUDED = "demo_excluded_games = [] if TRUE_SUBMISSION else ["
 SERVER_ANCHOR = 'VENV = f"{PREFIX}/venv"'
 PATHS_ANCHOR = "SERVED_MODEL_NAME = 'flashnext'"
-# Two Phase A runs (fz-inventory, fz-reset2) died in 6 s because /kaggle/input/datasets/dfranzen/... was not there.
-# This guard waits briefly for late mounts, falls back to any directory with the same slug, and otherwise prints
-# what IS mounted, so the failure is diagnosable. Inserted in every variant.
+# Two Phase A runs (fz-inventory, fz-reset2) died in 6 s because /kaggle/input/datasets/dfranzen/... was not there,
+# and fz-sm2dlr25 (Oct 8) died in the first pip install: that session mounted inputs at the older flat layout
+# (/kaggle/input/<slug>), so /kaggle/input/competitions/arc-prize-2026-arc-agi-3/arc_agi_3_wheels did not exist.
+# This guard resolves every hardcoded input path (datasets, models, competition data): it waits briefly for late
+# mounts, then looks for the same path tail under the flat layout, and otherwise prints what IS mounted.
+# Inserted in every variant; COMP_DIR replaces the competition path literal in later cells.
+COMP_LITERAL = "/kaggle/input/competitions/arc-prize-2026-arc-agi-3"
 PATHS_GUARD = r"""
 # ---- ours: input-path guard (tools/fz_variant.py) ----
 def _ours_resolve(path, wait_s=120):
     import glob as _g, os as _o, time as _t
-    slug = path.rstrip('/').split('/datasets/')[-1].split('/')[-1] if '/datasets/' in path else None
+    base = '/kaggle/input/'
+    rel = path.rstrip('/')[len(base):].split('/') if path.startswith(base) else []
+    tail = None
+    if len(rel) >= 3 and rel[0] in ('datasets', 'models'):
+        tail = '/'.join(rel[2:])          # drop kind and owner: <slug>[/...]
+    elif len(rel) >= 2 and rel[0] == 'competitions':
+        tail = '/'.join(rel[1:])          # drop kind: <competition>[/...]
     t0 = _t.time()
     while True:
         if _o.path.exists(path):
             return path
-        if slug:
-            hits = [h for h in _g.glob('/kaggle/input/**/' + slug, recursive=True) if _o.path.isdir(h)]
-            if hits:
-                print('OURS_PATH fallback', path, '->', hits[0], flush=True)
-                return hits[0]
+        if tail:
+            for pat in ('/kaggle/input/' + tail, '/kaggle/input/*/' + tail, '/kaggle/input/*/*/' + tail):
+                hits = sorted(h for h in _g.glob(pat) if _o.path.isdir(h))
+                if hits:
+                    print('OURS_PATH fallback', path, '->', hits[0], flush=True)
+                    return hits[0]
         if _t.time() - t0 > wait_s:
             print('OURS_PATH missing', path, '| /kaggle/input has:', sorted(_g.glob('/kaggle/input/*/*'))[:40], flush=True)
             return path
@@ -58,6 +69,7 @@ WHEELHOUSE_DIR = _ours_resolve(WHEELHOUSE_DIR)
 ORIG_BUNDLE_DIR = _ours_resolve(ORIG_BUNDLE_DIR)
 MODEL_DIR = _ours_resolve(MODEL_DIR)
 DRAFT_MODEL_DIR = _ours_resolve(DRAFT_MODEL_DIR)
+COMP_DIR = _ours_resolve('/kaggle/input/competitions/arc-prize-2026-arc-agi-3')
 """
 
 
@@ -76,6 +88,15 @@ def build(name: str, sets: dict[str, str], minutes: int, all_games: bool, owner:
     assert s.count(PATHS_ANCHOR) == 1
     cells[p_i]["source"] = s.replace(PATHS_ANCHOR, PATHS_ANCHOR + "\n" + PATHS_GUARD).splitlines(keepends=True)
     changed.append(p_i)
+    for i, c in enumerate(cells):   # competition path literal -> COMP_DIR (defined by the guard above)
+        if i <= p_i or c.get("cell_type") != "code":
+            continue
+        s = "".join(c["source"])
+        if COMP_LITERAL in s:
+            s = s.replace('"' + COMP_LITERAL, 'COMP_DIR + "').replace("'" + COMP_LITERAL, "COMP_DIR + '")
+            assert COMP_LITERAL not in s, f"cell {i}: competition path in an unexpected form"
+            c["source"] = s.splitlines(keepends=True)
+            changed.append(i)
     if server:
         srv_i = next(i for i, c in enumerate(cells) if SERVER_ANCHOR in "".join(c["source"]))
         s = "".join(cells[srv_i]["source"])

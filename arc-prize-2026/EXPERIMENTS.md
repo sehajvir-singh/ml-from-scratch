@@ -177,3 +177,19 @@ Phase A demo (10 games × 25 min): 36.56 (his own run).
   - repeat it locally to confirm.
   - The repeat guard is Franzen's own harness code. It blocks re-running an action sequence that is already recorded as
     fatal from the same board state. It is not a server setting.
+
+## Oct 10: why fz-sm2dlr25 crashed, and the fix
+- **Log:** `OURS_PATH fallback /kaggle/input/datasets/dfranzen/... -> /kaggle/input/<slug>` for both datasets, then
+  `CalledProcessError` in the first `pip install --find-links /kaggle/input/competitions/arc-prize-2026-arc-agi-3/arc_agi_3_wheels`.
+- **Cause (inferred):** that session mounted inputs in the older flat layout. Our guard covered the two datasets but
+  not the competition-data path (cells 8 and 20) or the two model paths. The same failure in a scored rerun would
+  waste that day's submission.
+- **Fix in `tools/fz_variant.py`:**
+  - `_ours_resolve` now handles datasets, models and competition paths. It tries the flat layout (`/kaggle/input/<tail>`)
+    and one or two directory levels deeper.
+  - `COMP_DIR` replaces the competition-path literal in every later cell.
+  - Tested on a fake flat layout: all four kinds resolve, a truly missing path is reported, and the built notebook
+    passes the builder's syntax check.
+- **Already-pushed notebooks** (sm2v25, sm2dl25, sm2dlg25, sm2dlgb25) still have the old guard. Rebuild before
+  submitting where possible.
+- **Hidden submission Oct 10:** sm2dl25 (v2 + death ledger) was submitted, not sm2dlg25. sm2dlg25 goes in on Oct 11.
