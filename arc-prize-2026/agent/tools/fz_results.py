@@ -9,6 +9,8 @@ from __future__ import annotations
 
 import collections
 import json
+import re
+import statistics
 import sys
 from pathlib import Path
 
@@ -92,10 +94,24 @@ def main() -> None:
     for (name, r), p in zip(runs, dirs):
         kinds = sum((x["kinds"] for x in r.values()), collections.Counter())
         print(f"\n{name}: action types {dict(kinds.most_common())}")
-        for log in Path(p).rglob("serve*.log"):   # server memory facts, if the log was saved
+        for log in Path(p).rglob("serve*.log"):   # server memory facts and decode speed, if the log was saved
+            gen, acc, busy = [], [], []
             for line in log.read_text(errors="ignore").splitlines():
                 if any(k in line for k in ("max_total_num_tokens", "KV Cache is allocated", "avail mem", "OutOfMemory")):
                     print("   server:", line.strip()[:200])
+                m = re.search(r"gen throughput \(token/s\): ([\d.]+)", line)
+                if m:
+                    gen.append(float(m.group(1)))
+                    a = re.search(r"accept len: ([\d.]+)", line)
+                    if a:
+                        acc.append(float(a.group(1)))
+                    b = re.search(r"#running-req: (\d+)", line)
+                    if b:
+                        busy.append(int(b.group(1)))
+            if gen:   # low-noise speed metric: compare variants on this, not on score, for serving changes
+                print(f"   speed: mean decode {statistics.mean(gen):.0f} tok/s over {len(gen)} log lines"
+                      + (f", accept len {statistics.mean(acc):.2f}" if acc else "")
+                      + (f", running requests {statistics.mean(busy):.1f}" if busy else ""))
     print("\nRule: one 10-game run varies by several points; only a gain of about 3+ in the mean counts as a signal.")
 
 

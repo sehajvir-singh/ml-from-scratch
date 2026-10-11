@@ -221,3 +221,22 @@ Phase A demo (10 games × 25 min): 36.56 (his own run).
   - v2 + ledger: 28.19;
   - unknown notebook (Oct 6): 28.42;
   - mem12 (12 streams + memory settings): 20.35.
+
+## Oct 11: realistic-time local runs (25 games x 120 min, about 48 stream-minutes per game, like the hidden run)
+- **Means:** base120 **48.38** (4.28 levels); sm2v120 **48.68** (4.32 levels).
+  - **Paired:** +0.30; better in 11, worse in 8.
+  - **Without the largest swing** (m0r0 −70.2): +3.24.
+  - **Actions:** 5,366 vs 4,920.
+- **Time is the dominant factor.** The same notebook scores about 13 with 16 stream-minutes per game and about 48 with
+  48. A 3× time budget gives about 3.7× the score on the public games.
+- **Implication:**
+  - in the hidden run, every gain in decode speed is extra time per game;
+  - serving speed (speculative decoding steps, etc.) may be worth more than any prompt change;
+  - but the slope must be measured at the hidden operating point (48 stream-minutes), not at 16.
+- **Next:**
+  1. **Measure the slope:** sm2v180 (v2, 25 × 180 min ≈ 72 stream-minutes per game). The gain from 48 to 72 tells what
+     +50% throughput would be worth.
+  2. **Measure speed directly:** `tools/fz_results.py` now prints mean decode tok/s, speculative accept length and
+     running requests from serve.log. These are low-noise, so serving changes are judged on them first.
+     First candidate: `SPEC_STEPS=4` (Franzen: 3), at 120 min.
+- **The public set is easier than the hidden set:** 48 locally vs about 28 hidden at the same per-game time.
