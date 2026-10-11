@@ -23,3 +23,5 @@ External reference draws on the same chassis:
 | 2026-10-06 | unknown notebook (no description; probably sm2v25 or the Franzen copy) | ? | – | – | **28.42** | Notebook still to be confirmed from the Kaggle Submissions page. New best public score. |
 | 2026-10-07 | fz-sm2v25 draw 1 (solved memory v2, append mode, Franzen server settings) | hackersinghrai/fz-sm2v25, v1 | 25-game run 16.95 vs plain-run average 13.11 | – | **28.17** | +0.84 over the plain copy's mean of 27.33 (SD 1.36): inside the noise. Draw 2 submitted Oct 8. |
 | 2026-10-08 | fz-sm2v25 draw 2 | hackersinghrai/fz-sm2v25, v1 | – | – | **29.25** | **New best.** sm2v25 draws 28.17 and 29.25 (mean 28.71) vs the plain copy's 25.78, 27.88, 28.32 (mean 27.33): +1.4, t ≈ 1.5. v2 is kept as the base. Oct 9: no submission (slot missed). |
+| 2026-10-10 | fz-sm2dl25 (v2 + ARC3_DEATH_LEDGER) | hackersinghrai/fz-sm2dl25, v1 | 25-game run 16.14 | – | **28.19** | Same as v2 alone (28.17, 29.25). The ledger shows no hidden gain. |
+| 2026-10-11 | fz-sm2dlg25 v1 (v2 + ledger + ARC3_DEATH_REPEAT_GUARD) | hackersinghrai/fz-sm2dlg25, v1 | local 21.13, then repeats 11.72 / 11.84 | – | pending | |

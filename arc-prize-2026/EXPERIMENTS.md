@@ -193,3 +193,31 @@ Phase A demo (10 games × 25 min): 36.56 (his own run).
 - **Already-pushed notebooks** (sm2v25, sm2dl25, sm2dlg25, sm2dlgb25) still have the old guard. Rebuild before
   submitting where possible.
 - **Hidden submission Oct 10:** sm2dl25 (v2 + death ledger) was submitted, not sm2dlg25. sm2dlg25 goes in on Oct 11.
+
+## Oct 11: the 21.13 was luck; local 40-minute runs do not predict hidden scores
+- **Repeats of sm2dlg25** (v2 + ledger + repeat guard): **11.72** (sm2dlgb25) and **11.84** (sm2dlg25 v3), against
+  21.13 the first time.
+  - vs sm2r25 (12.86): −1.13 and −1.02; 9/8 and 9/9 games better/worse.
+  - **No real effect.**
+- **Hidden:** sm2dl25 (v2 + ledger) = **28.19**, the same as v2 (28.17, 29.25).
+- **The 25-game, 40-minute local runs we have, by config:**
+  - plain: 10.65, 14.79, 14.08, 12.90;
+  - v2: 16.95, 12.86;
+  - v2 + ledger: 16.14;
+  - v2 + ledger + guard: 21.13, 11.72, 11.84;
+  - v2 + notices: 15.33; notices alone 14.50.
+  - Spread within one config reaches ±5. **Effects under about 3 points cannot be seen with one or two runs.**
+- **Why local runs mislead (structural, not just noise):** Franzen's Phase A sets `concurrency = 25 games` while the
+  server has 10 streams. With `--minutes 40`, each game gets about 16 stream-minutes. The hidden run gives each of
+  110 games about 532×10/110 ≈ 48 stream-minutes. Local runs are therefore about 3× more starved than the real
+  scored run, so they test a different regime.
+- **New protocol:**
+  1. Hidden draws are the main judge (SD ≈ 1). Alternate the best-known config with candidates.
+  2. A local run, when needed, uses `--minutes 120` (≈48 stream-minutes per game, like the hidden run) and is judged
+     with the hidden draws, not alone.
+- **Hidden scoreboard so far:**
+  - plain: 25.78, 27.88, 28.32;
+  - v2: 28.17, 29.25;
+  - v2 + ledger: 28.19;
+  - unknown notebook (Oct 6): 28.42;
+  - mem12 (12 streams + memory settings): 20.35.
