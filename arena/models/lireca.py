@@ -31,7 +31,7 @@ class LiquidConvUpdate(nn.Module):
         self.perceive = nn.Sequential(nn.Conv2d(n_in, hidden, 3, padding=1), nn.GELU())
         self.cand = nn.Conv2d(hidden, n_state, 1)
         self.tau = nn.Conv2d(hidden, n_state, 1)
-        nn.init.constant_(self.tau.bias, 2.0)          # start mostly "keep the old state"
+        nn.init.zeros_(self.tau.bias)                  # start half-way between keep and replace
 
     def forward(self, features, state):
         h = self.perceive(features)
@@ -48,8 +48,10 @@ class LiReCA(GridModel):
         self.task = nn.Embedding(len(TASKS), task_dim)
         n_inp = N_COLORS + task_dim + 2
         self.z_update = LiquidConvUpdate(cz + cy + n_inp + 2 * cz, cz, hidden)
-        self.y_update = LiquidConvUpdate(cy + cz, cy, hidden // 2)
+        self.y_update = LiquidConvUpdate(cy + cz + n_inp, cy, hidden // 2)
         self.readout = nn.Conv2d(cy, N_COLORS, 1)
+        # y lives in [-1, 1] (liquid states are tanh-bounded), so let the readout sharpen it.
+        self.readout_scale = nn.Parameter(torch.tensor(8.0))
         self.cz, self.cy = cz, cy
         self.n_latent, self.n_cycles, self.n_sup, self.n_sup_eval = n_latent, n_cycles, n_sup, n_sup_eval
         ys, xs = torch.meshgrid(torch.linspace(-1, 1, H), torch.linspace(-1, 1, W), indexing="ij")
@@ -63,7 +65,7 @@ class LiReCA(GridModel):
     def latent_recursion(self, inp, y, z):
         for _ in range(self.n_latent):
             z = self.z_update(torch.cat([z, y, inp, self.axial(z)], 1), z)   # think
-        y = self.y_update(torch.cat([y, z], 1), y)                          # act
+        y = self.y_update(torch.cat([y, z, inp], 1), y)                     # act
         return y, z
 
     def forward(self, grid, task):
@@ -79,6 +81,6 @@ class LiReCA(GridModel):
                 for _ in range(self.n_cycles - 1):
                     y, z = self.latent_recursion(inp, y, z)
             y, z = self.latent_recursion(inp, y, z)
-            outs.append(self.readout(y))
+            outs.append(self.readout(y) * self.readout_scale)
             y, z = y.detach(), z.detach()
         return outs
