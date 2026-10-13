@@ -83,9 +83,12 @@ enum PassService {
 
     // MARK: Live Activity
 
+    /// Ends countdowns for passes that are over, including passes the night
+    /// door cut short (the monitor clears the active pass when night starts).
     static func endExpiredActivities(now: Date = .now) async {
+        let passIsRunning = SharedStore.shared.activePassExpiry != nil
         for activity in Activity<PassActivityAttributes>.activities
-        where activity.content.state.expiresAt <= now {
+        where !passIsRunning || activity.content.state.expiresAt <= now {
             await activity.end(nil, dismissalPolicy: .immediate)
         }
     }

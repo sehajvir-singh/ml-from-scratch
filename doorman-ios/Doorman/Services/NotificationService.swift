@@ -103,8 +103,10 @@ enum NotificationService {
         }
         words = words.map { swappedPronoun($0) }
 
-        if let verb = words.first?.lowercased(), verbs.contains(verb), words.count <= 9 {
-            words[0] = verb
+        if let first = words.first, verbs.contains(first.lowercased()), words.count <= 9 {
+            // "Reply" → "reply", but keep short forms like "DM".
+            let isAllCaps = first.count > 1 && first == first.uppercased()
+            words[0] = isAllCaps ? first : first.lowercased()
             return "Did you \(words.joined(separator: " "))?"
         }
 
