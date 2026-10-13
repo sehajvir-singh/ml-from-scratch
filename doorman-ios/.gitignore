@@ -1,0 +1,7 @@
+# Swift package build output
+.build/
+.swiftpm/
+# Xcode user state
+xcuserdata/
+*.xcuserstate
+DerivedData/
