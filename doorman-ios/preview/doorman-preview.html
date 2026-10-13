@@ -1,0 +1,674 @@
+<title>Doorman Preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: page text on the left, a working iPhone mockup on the right; stacks to one column on phones.
+   One deliberate dark look that matches the app's own shield colors. */
+:root {
+  --page: #0b0a0e;
+  --ink: #0e0e12;          /* app background, same as the shield */
+  --panel: #18171e;
+  --panel-2: #22212a;
+  --line: #2c2b35;
+  --text: #f4f2f6;
+  --muted: #a19eaa;
+  --faint: #6d6a76;
+  --coral: #ff4a5e;
+  --coral-soft: rgba(255, 74, 94, 0.14);
+  --good: #4fd18b;
+  --warn: #ffb547;
+  --display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", sans-serif;
+  --body: "Instrument Sans", "Helvetica Neue", Arial, sans-serif;
+  --ios: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { background: var(--page); color: var(--text); }
+body { font-family: var(--body); font-size: 15px; line-height: 1.55; }
+.wrap { max-width: 1060px; margin: 0 auto; padding-inline: 20px; padding-block: 36px 56px; }
+
+/* ---------- page header ---------- */
+.top { display: flex; align-items: center; gap: 14px; margin-bottom: 28px; }
+.mark { width: 44px; height: 44px; border-radius: 12px; background: var(--coral); display: grid; place-items: center; flex: none; }
+.mark svg { width: 24px; height: 24px; }
+.top h1 { font-family: var(--display); font-weight: 800; font-size: clamp(30px, 5vw, 40px); letter-spacing: -0.02em; margin: 0; line-height: 1; }
+.top p { margin: 4px 0 0; color: var(--muted); }
+
+.grid { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 40px; align-items: start; }
+@media (max-width: 820px) { .grid { grid-template-columns: minmax(0, 1fr); } .phone-col { order: -1; } }
+
+/* ---------- left column ---------- */
+.label { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--faint); font-weight: 600; margin: 0 0 10px; }
+.steps { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 22px; }
+.chip { font: 600 14px var(--body); color: var(--text); background: var(--panel); border: 1px solid var(--line); border-radius: 999px; padding: 8px 14px; cursor: pointer; }
+.chip[aria-pressed="true"] { background: var(--coral); border-color: var(--coral); color: #fff; }
+.chip:focus-visible, button:focus-visible, input:focus-visible { outline: 2px solid var(--coral); outline-offset: 2px; }
+
+.explain { background: var(--panel); border: 1px solid var(--line); border-radius: 18px; padding: 22px 22px 18px; margin-bottom: 22px; }
+.explain h2 { font-family: var(--display); font-weight: 700; font-size: 24px; letter-spacing: -0.01em; margin: 0 0 8px; text-wrap: balance; }
+.explain p { margin: 0 0 10px; color: #d6d3dc; max-width: 62ch; }
+.explain .try { color: var(--coral); font-weight: 600; }
+
+.time { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+.time-note { color: var(--muted); font-size: 13.5px; margin: 0 0 26px; max-width: 60ch; }
+
+.facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-bottom: 26px; }
+@media (max-width: 520px) { .facts { grid-template-columns: minmax(0, 1fr); } }
+.fact { border-top: 1px solid var(--line); padding-top: 12px; }
+.fact b { display: block; font-weight: 600; margin-bottom: 2px; }
+.fact span { color: var(--muted); font-size: 14px; }
+
+.code { background: var(--panel); border: 1px solid var(--line); border-radius: 18px; padding: 20px 22px; }
+.code h3 { font-family: var(--display); font-size: 19px; margin: 0 0 10px; }
+.code ol { margin: 0 0 12px; padding-left: 20px; color: #d6d3dc; }
+.code li { margin-bottom: 4px; }
+.code a { color: var(--coral); word-break: break-all; }
+.code small { color: var(--faint); display: block; }
+
+/* ---------- the phone ---------- */
+.phone-col { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.phone {
+  width: min(340px, 100%); aspect-ratio: 340 / 720; max-width: 100%;
+  border-radius: 54px; padding: 11px; background: #2b2a30;
+  box-shadow: 0 0 0 1px #3a3940, 0 30px 80px rgba(0,0,0,0.6), inset 0 0 0 2px #1a191d;
+}
+.screen { position: relative; width: 100%; height: 100%; border-radius: 44px; overflow: hidden; background: var(--ink); font-family: var(--ios); color: var(--text); }
+.status { position: absolute; top: 0; left: 0; right: 0; height: 48px; display: flex; justify-content: space-between; align-items: center; padding: 0 28px; font-size: 14px; font-weight: 600; z-index: 6; font-variant-numeric: tabular-nums; }
+.status .icons { display: flex; gap: 5px; align-items: center; }
+.status .bat { width: 24px; height: 11px; border: 1.5px solid currentColor; border-radius: 3px; position: relative; opacity: .9; }
+.status .bat::after { content: ""; position: absolute; inset: 1.5px; right: 5px; background: currentColor; border-radius: 1px; }
+
+/* Dynamic Island */
+.island { position: absolute; top: 11px; left: 50%; transform: translateX(-50%); width: 104px; height: 31px; background: #000; border-radius: 20px; z-index: 7; display: flex; align-items: center; justify-content: space-between; padding: 0 12px; transition: width .35s ease, height .35s ease, border-radius .35s ease; overflow: hidden; }
+.island .il, .island .ir { display: none; align-items: center; gap: 5px; font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.island.live { width: 196px; }
+.island.live .il, .island.live .ir { display: flex; }
+.island .ir { color: var(--coral); }
+.island.closed .ir { color: var(--muted); }
+.island svg { width: 15px; height: 15px; }
+
+.view { position: absolute; inset: 0; padding: 58px 20px 26px; display: flex; flex-direction: column; overflow-y: auto; }
+.view[hidden] { display: none !important; }
+
+/* blurred app behind the shield */
+.behind { position: absolute; inset: 0; background:
+  radial-gradient(60% 40% at 25% 25%, #25f4ee55, transparent 70%),
+  radial-gradient(55% 45% at 80% 70%, #fe2c5566, transparent 70%),
+  linear-gradient(160deg, #101014, #1b1320); filter: blur(18px); transform: scale(1.1); }
+.shield { position: relative; z-index: 1; height: 100%; display: flex; flex-direction: column; align-items: center; text-align: center; padding: 70px 22px 30px; background: rgba(14,14,18,0.72); }
+.shield .door { width: 64px; height: 64px; color: var(--coral); margin-bottom: 18px; }
+.shield h3 { font-size: 22px; font-weight: 700; margin: 0 0 10px; letter-spacing: -0.01em; text-wrap: balance; }
+.shield .sub { color: rgba(255,255,255,0.75); font-size: 15.5px; line-height: 1.4; margin: 0; min-height: 44px; }
+.shield .btns { margin-top: auto; width: 100%; display: flex; flex-direction: column; gap: 8px; }
+.btn-primary { width: 100%; border: 0; border-radius: 16px; background: var(--coral); color: #fff; font: 600 17px var(--ios); padding: 15px; cursor: pointer; }
+.btn-primary:disabled { opacity: .45; cursor: default; }
+.btn-ghost { width: 100%; border: 0; background: transparent; color: #9e9e9e; font: 500 16px var(--ios); padding: 10px; cursor: pointer; }
+
+/* notification banner */
+.banner { position: absolute; top: 52px; left: 10px; right: 10px; z-index: 8; background: rgba(44,43,50,0.92); backdrop-filter: blur(20px); border-radius: 22px; padding: 12px 14px; display: flex; gap: 11px; align-items: flex-start; cursor: pointer; text-align: left; border: 0; color: var(--text); font-family: var(--ios); transform: translateY(-140%); transition: transform .45s cubic-bezier(.2,.9,.3,1.2); }
+.banner.show { transform: translateY(0); }
+.banner .appicon { width: 36px; height: 36px; border-radius: 9px; background: var(--coral); display: grid; place-items: center; flex: none; }
+.banner .appicon svg { width: 20px; height: 20px; }
+.banner .bt { font-size: 13px; color: #cfcdd4; display: flex; justify-content: space-between; width: 100%; }
+.banner .bb { font-size: 15px; font-weight: 600; margin-top: 1px; line-height: 1.3; }
+.banner .actions { display: flex; gap: 8px; margin-top: 8px; }
+.banner .actions button { flex: 1; border: 0; border-radius: 10px; padding: 8px; font: 600 14px var(--ios); background: rgba(255,255,255,0.12); color: var(--text); cursor: pointer; }
+
+/* in-app screens */
+.nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+.nav .ttl { font-size: 28px; font-weight: 800; letter-spacing: -0.02em; }
+.nav button { background: var(--panel-2); border: 0; color: var(--text); width: 34px; height: 34px; border-radius: 50%; font-size: 17px; cursor: pointer; }
+.ctx { background: var(--panel); border-radius: 14px; padding: 11px 13px; font-size: 14px; color: #d8d6dd; margin-bottom: 16px; display: flex; gap: 8px; align-items: center; }
+.ctx .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--coral); flex: none; }
+.q { font-size: 24px; font-weight: 700; letter-spacing: -0.01em; margin: 0 0 12px; }
+.field { width: 100%; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; color: var(--text); font: 17px var(--ios); padding: 14px; }
+.field::placeholder { color: var(--faint); }
+.hint { font-size: 12.5px; color: var(--faint); margin: 6px 2px 12px; }
+.quick { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 18px; }
+.quick button { background: var(--panel-2); color: var(--text); border: 0; border-radius: 999px; padding: 8px 12px; font: 500 13.5px var(--ios); cursor: pointer; }
+.grow { flex: 1; }
+
+/* breathe */
+.breathe { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; flex: 1; gap: 16px; }
+.breathe p { color: var(--muted); margin: 0; font-size: 15px; }
+.ringbtn { width: 170px; height: 170px; border-radius: 50%; border: 0; background: var(--coral-soft); color: var(--text); font: 600 17px var(--ios); position: relative; cursor: pointer; touch-action: none; user-select: none; -webkit-user-select: none; }
+.ringbtn svg { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); }
+.ringbtn circle { fill: none; stroke-width: 6; }
+.ringbtn .bg { stroke: var(--line); }
+.ringbtn .fg { stroke: var(--coral); stroke-linecap: round; stroke-dasharray: 502; stroke-dashoffset: 502; }
+
+/* thinking + result */
+.center { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 14px; }
+.thinking .door { width: 70px; height: 70px; color: var(--coral); animation: knock 0.9s ease-in-out infinite; }
+@keyframes knock { 0%, 100% { transform: rotate(0); } 30% { transform: rotate(-6deg); } 60% { transform: rotate(4deg); } }
+.verdict { font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 700; }
+.verdict.ok { color: var(--good); }
+.verdict.no { color: var(--coral); }
+.big { font-size: 25px; font-weight: 700; line-height: 1.25; letter-spacing: -0.01em; margin: 0; text-wrap: balance; }
+.mins { font-size: 64px; font-weight: 800; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; line-height: 1; }
+.mins small { font-size: 20px; font-weight: 600; color: var(--muted); letter-spacing: 0; }
+
+/* home */
+.status-card { background: var(--panel); border-radius: 20px; padding: 16px; margin-bottom: 12px; display: flex; align-items: center; gap: 12px; }
+.status-card .ic { width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center; background: var(--coral-soft); color: var(--coral); flex: none; }
+.status-card .ic svg { width: 22px; height: 22px; }
+.status-card b { display: block; font-size: 16px; }
+.status-card span { font-size: 13.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.status-card .end { margin-left: auto; background: var(--panel-2); border: 0; color: var(--text); border-radius: 10px; padding: 7px 10px; font: 600 13px var(--ios); cursor: pointer; }
+.stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-bottom: 12px; }
+.stat { background: var(--panel); border-radius: 16px; padding: 12px 10px; text-align: center; }
+.stat b { display: block; font-size: 22px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.stat span { font-size: 11.5px; color: var(--muted); }
+.budget { background: var(--panel); border-radius: 16px; padding: 12px 14px; display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.budget svg { width: 46px; height: 46px; transform: rotate(-90deg); flex: none; }
+.budget circle { fill: none; stroke-width: 6; }
+.budget .bg { stroke: var(--line); }
+.budget .fg { stroke: var(--coral); stroke-linecap: round; }
+.budget b { font-size: 15px; display: block; }
+.budget span { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.list-title { font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--faint); margin: 4px 2px 6px; font-weight: 600; }
+.pass-row { display: flex; align-items: center; gap: 10px; padding: 9px 2px; border-bottom: 1px solid var(--line); font-size: 14px; }
+.pass-row .r { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pass-row .m { color: var(--muted); font-variant-numeric: tabular-nums; }
+.pill { font-size: 11px; font-weight: 700; border-radius: 999px; padding: 3px 7px; }
+.pill.ok { background: rgba(79,209,139,.15); color: var(--good); }
+.pill.no { background: var(--coral-soft); color: var(--coral); }
+.pill.hab { background: rgba(255,181,71,.15); color: var(--warn); }
+.example { font-size: 11px; color: var(--faint); margin: 6px 2px 0; }
+
+/* wrapped */
+.wrapped-card { flex: 1; border-radius: 26px; padding: 22px 18px; background:
+  radial-gradient(80% 50% at 100% 0%, rgba(255,74,94,.45), transparent 70%),
+  radial-gradient(70% 50% at 0% 100%, rgba(120,90,255,.35), transparent 70%), #141219; display: flex; flex-direction: column; gap: 14px; }
+.wrapped-card .wk { font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: #e6e3ea; font-weight: 700; }
+.wrapped-card .hero { font-size: 50px; font-weight: 800; letter-spacing: -0.03em; line-height: .95; }
+.wrapped-card .hero small { display: block; font-size: 17px; font-weight: 600; letter-spacing: 0; color: #e6e3ea; margin-top: 6px; }
+.wgrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.wgrid div { background: rgba(255,255,255,.07); border-radius: 14px; padding: 10px 12px; }
+.wgrid b { font-size: 22px; display: block; font-variant-numeric: tabular-nums; }
+.wgrid span { font-size: 12px; color: #d9d6de; }
+.share { margin-top: auto; background: #fff; color: #111; border: 0; border-radius: 14px; padding: 12px; font: 700 15px var(--ios); }
+
+.under { font-size: 13px; color: var(--muted); text-align: center; max-width: 340px; margin: 0; }
+.reset { background: transparent; border: 1px solid var(--line); color: var(--muted); border-radius: 999px; padding: 6px 12px; font: 500 13px var(--body); cursor: pointer; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="mark" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linejoin="round"><path d="M5 21V4.5a1 1 0 0 1 .8-1l10-2A1 1 0 0 1 17 2.5V21"/><path d="M3 21h18"/><circle cx="13.5" cy="12" r="1.1" fill="#fff" stroke="none"/></svg>
+    </div>
+    <div>
+      <h1>Doorman</h1>
+      <p>A smart bouncer for your phone. Tap through the app below.</p>
+    </div>
+  </header>
+
+  <div class="grid">
+    <section>
+      <p class="label">Jump to a screen</p>
+      <div class="steps" role="group" aria-label="Screens">
+        <button class="chip" data-go="shield" aria-pressed="true">1 · Block screen</button>
+        <button class="chip" data-go="ask" aria-pressed="false">2 · Say why</button>
+        <button class="chip" data-go="home" aria-pressed="false">3 · Home</button>
+        <button class="chip" data-go="wrapped" aria-pressed="false">4 · Weekly Wrapped</button>
+      </div>
+
+      <div class="explain" aria-live="polite">
+        <h2 id="exTitle">You open TikTok. The door is closed.</h2>
+        <p id="exBody">Instead of TikTok, you see Doorman's block screen. It shows one line about your day: your next meeting and how many times you opened apps today.</p>
+        <p class="try" id="exTry">Try it: tap “Ask Doorman” on the phone.</p>
+      </div>
+
+      <p class="label">Time of day</p>
+      <div class="time" role="group" aria-label="Time of day">
+        <button class="chip" data-phase="normal" aria-pressed="true">☀️ Daytime</button>
+        <button class="chip" data-phase="morning" aria-pressed="false">🌅 Morning door</button>
+        <button class="chip" data-phase="night" aria-pressed="false">🌙 Night door</button>
+      </div>
+      <p class="time-note" id="phaseNote">Daytime: real reasons get a short pass. "Just checking" gets 1 minute.</p>
+
+      <p class="label">What makes it special</p>
+      <div class="facts">
+        <div class="fact"><b>Not a ChatGPT wrapper</b><span>It lives inside iOS Screen Time. A chatbot can't lock your apps.</span></div>
+        <div class="fact"><b>AI on your iPhone</b><span>Apple's on-device AI decides. Built-in rules take over on older phones.</span></div>
+        <div class="fact"><b>Private</b><span>No server, no account. Your data stays on your phone.</span></div>
+        <div class="fact"><b>Locks itself again</b><span>When the pass ends, the app closes automatically.</span></div>
+      </div>
+
+      <div class="code">
+        <h3>See it on your real iPhone</h3>
+        <ol>
+          <li>Download the <b>doorman-ios</b> folder from GitHub (link below).</li>
+          <li>On your Mac, open <b>Doorman.xcodeproj</b> in Xcode.</li>
+          <li>Pick your Apple ID as the Team (Signing &amp; Capabilities).</li>
+          <li>Plug in your iPhone and press ▶ Run.</li>
+        </ol>
+        <a href="https://github.com/sehajvir-singh/ml-from-scratch/tree/claude/vigilant-brahmagupta-daoajt/doorman-ios" target="_blank" rel="noopener">github.com/sehajvir-singh/ml-from-scratch/…/doorman-ios</a>
+        <small>Screen Time blocking only works on a real iPhone, not in the Simulator.</small>
+      </div>
+    </section>
+
+    <div class="phone-col">
+      <div class="phone">
+        <div class="screen" id="screen">
+          <div class="status"><span id="clock">2:13</span><span class="icons"><span aria-hidden="true">▂▄▆</span><span class="bat" aria-hidden="true"></span></span></div>
+          <div class="island" id="island" aria-live="polite">
+            <span class="il"><svg viewBox="0 0 24 24" fill="none" stroke="#ff4a5e" stroke-width="2.2" stroke-linejoin="round"><path d="M6 21V5l10-2v18"/><path d="M3 21h18"/></svg><span id="ilText">Pass</span></span>
+            <span class="ir" id="irText">0:00</span>
+          </div>
+
+          <button class="banner" id="banner" type="button" aria-label="Doorman notification">
+            <span class="appicon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linejoin="round"><path d="M6 21V5l10-2v18"/><path d="M3 21h18"/></svg></span>
+            <span style="flex:1;min-width:0">
+              <span class="bt"><span>DOORMAN</span><span>now</span></span>
+              <span class="bb" id="bannerText">Tap here and tell me why you want in.</span>
+              <span class="actions" id="bannerActions" hidden><button type="button" data-honest="yes">Yes, done</button><button type="button" data-honest="no">No</button></span>
+            </span>
+          </button>
+
+          <!-- 1. Shield -->
+          <div class="view" id="v-shield" style="padding:0">
+            <div class="behind" aria-hidden="true"></div>
+            <div class="shield">
+              <svg class="door" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M5 21V4.5a1 1 0 0 1 .8-1l10-2A1 1 0 0 1 17 2.5V21"/><path d="M3 21h18"/><circle cx="13.5" cy="12" r="1" fill="currentColor"/></svg>
+              <h3>TikTok is behind the door</h3>
+              <p class="sub" id="shieldSub">Deck review in 47 min · 6th open today</p>
+              <div class="btns">
+                <button class="btn-primary" id="askBtn" type="button">Ask Doorman</button>
+                <button class="btn-ghost" id="notNow" type="button">Not now</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2a. Breathe (night / many opens) -->
+          <div class="view" id="v-breathe" hidden>
+            <div class="nav"><span class="ttl">Doorman</span><button type="button" data-close aria-label="Close">✕</button></div>
+            <div class="breathe">
+              <p>Lots of opens lately. Take one slow breath first.</p>
+              <button class="ringbtn" id="holdBtn" type="button" aria-label="Press and hold to breathe">
+                <svg viewBox="0 0 170 170" aria-hidden="true"><circle class="bg" cx="85" cy="85" r="80"/><circle class="fg" id="holdRing" cx="85" cy="85" r="80"/></svg>
+                <span id="holdText">Press and hold</span>
+              </button>
+              <p style="font-size:13px">Breathe in… and out…</p>
+            </div>
+          </div>
+
+          <!-- 2b. Ask why -->
+          <div class="view" id="v-ask" hidden>
+            <div class="nav"><span class="ttl">Doorman</span><button type="button" data-close aria-label="Close">✕</button></div>
+            <div class="ctx"><span class="dot"></span><span id="askCtx">Deck review in 47 min · 6th open today</span></div>
+            <p class="q">Why do you want in?</p>
+            <label for="reason" class="hint" style="margin:0 2px 6px;display:block">In a few words:</label>
+            <input id="reason" class="field" type="text" maxlength="80" placeholder="e.g. reply to Maya" autocomplete="off">
+            <p class="hint">On iPhone, tap the 🎤 on the keyboard to just say it.</p>
+            <div class="quick" id="quick">
+              <button type="button">Reply to Maya</button>
+              <button type="button">Look up the address</button>
+              <button type="button">Client sent a brief</button>
+              <button type="button">Post my story</button>
+              <button type="button">Just checking</button>
+              <button type="button">I'm bored</button>
+            </div>
+            <div class="grow"></div>
+            <button class="btn-primary" id="askGo" type="button" disabled>Ask</button>
+          </div>
+
+          <!-- 2c. Thinking -->
+          <div class="view thinking" id="v-think" hidden>
+            <div class="center">
+              <svg class="door" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M5 21V4.5a1 1 0 0 1 .8-1l10-2A1 1 0 0 1 17 2.5V21"/><path d="M3 21h18"/><circle cx="13.5" cy="12" r="1" fill="currentColor"/></svg>
+              <p style="color:var(--muted);margin:0">Doorman is thinking…</p>
+            </div>
+          </div>
+
+          <!-- 2d. Result -->
+          <div class="view" id="v-result" hidden>
+            <div class="center">
+              <span class="verdict" id="verdict">Granted</span>
+              <div class="mins" id="mins">3<small> min</small></div>
+              <p class="big" id="reply">Granted: 3 minutes to reply. Then out.</p>
+            </div>
+            <button class="btn-primary" id="resultDone" type="button">Open TikTok</button>
+          </div>
+
+          <!-- 3. Home -->
+          <div class="view" id="v-home" hidden>
+            <div class="nav"><span class="ttl">Doorman</span><button type="button" aria-label="Settings">⚙︎</button></div>
+            <div class="status-card">
+              <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M6 21V5l10-2v18"/><path d="M3 21h18"/></svg></span>
+              <span><b id="doorState">Door is closed</b><span id="doorSub">5 apps behind the door</span></span>
+              <button class="end" id="endPass" type="button" hidden>End pass</button>
+            </div>
+            <div class="stats">
+              <div class="stat"><b id="sOpens">6</b><span>opens today</span></div>
+              <div class="stat"><b id="sPasses">3</b><span>passes</span></div>
+              <div class="stat"><b id="sDenied">1</b><span>kept out</span></div>
+            </div>
+            <div class="budget">
+              <svg viewBox="0 0 46 46" aria-hidden="true"><circle class="bg" cx="23" cy="23" r="19"/><circle class="fg" id="budgetRing" cx="23" cy="23" r="19" stroke-dasharray="119.4" stroke-dashoffset="95"/></svg>
+              <span><b>Attention budget</b><span id="budgetText">12 of 60 min used today</span></span>
+            </div>
+            <button class="btn-primary" id="homeAsk" type="button" style="margin-bottom:14px">Ask for a pass</button>
+            <p class="list-title">Today</p>
+            <div id="passList"></div>
+            <p class="example">The first rows are examples.</p>
+          </div>
+
+          <!-- 4. Wrapped -->
+          <div class="view" id="v-wrapped" hidden>
+            <div class="wrapped-card">
+              <span class="wk">Attention Wrapped · this week</span>
+              <div class="hero">212 opens<small>61% were “just checking”</small></div>
+              <div class="wgrid">
+                <div><b>148</b><span>min of passes</span></div>
+                <div><b>10pm</b><span>your worst hour</span></div>
+                <div><b>38</b><span>times kept out</span></div>
+                <div><b>84%</b><span>did what they said</span></div>
+              </div>
+              <span style="font-size:13px;color:#d9d6de">Top reason: Reply</span>
+              <button class="share" type="button">Share</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="under" id="under">This is a preview in your browser. Passes run fast here: 1 minute = 10 seconds.</p>
+      <button class="reset" id="reset" type="button">Start over</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  // ---- The same rules as Shared/Core/DoorPolicy.swift ----
+  const has = (t, words) => words.some(w => t.includes(w));
+  function classify(reason) {
+    const t = reason.toLowerCase();
+    if (t.trim().length < 3) return "habit";
+    if (has(t, ["bored", "boring", "nothing to do", "procrastinat", "relax", "chill", "kill time", "wind down"])) return "bored";
+    if (has(t, ["just check", "checking", "scroll", "see what", "nothing", "idk", "dunno", "just because", "quick look"])) return "habit";
+    if (has(t, ["reply", "respond", "answer", "message", "dm", "text ", "chat", "call ", "comment back"])) return "reply";
+    if (has(t, ["post", "upload", "create", "film", "story", "reel", "publish", "edit my"])) return "create";
+    if (has(t, ["work", "client", "boss", "meeting", "school", "class", "homework", "study", "job", "business", "email", "deadline"])) return "work";
+    if (has(t, ["look up", "lookup", "find", "search", "check the", "address", "recipe", "price", "how to", "what is", "directions", "event", "ticket"])) return "lookup";
+    return "habit";
+  }
+  const mindless = c => c === "habit" || c === "bored";
+  function decide(reason, phase, attemptsLastHour, usedToday, budget) {
+    const category = classify(reason);
+    const overBudget = usedToday >= budget;
+    const risk = phase === "night" ? 2 : attemptsLastHour < 3 ? 0 : attemptsLastHour < 6 ? 1 : 2;
+    let m = { reply: 3, lookup: 2, work: 10, create: 8, habit: 1, bored: 2 }[category];
+    if (phase === "night") m = (category === "reply" || category === "lookup") ? 2 : 0;
+    if (phase === "morning" && mindless(category)) m = 0;
+    if (overBudget) m = mindless(category) ? 0 : Math.min(m, 2);
+    if (risk === 2 && m > 1) m = Math.max(1, Math.floor(m / 2));
+    m = Math.min(Math.max(m, 0), 30);
+    return { minutes: m, category, reply: replyFor(category, m, phase, overBudget) };
+  }
+  function replyFor(c, m, phase, overBudget) {
+    if (m === 0) {
+      if (phase === "night") return "It's late. The door opens again in the morning.";
+      if (phase === "morning") return "Set your first task for today, then ask again.";
+      return overBudget ? "Today's attention budget is used up. Only real tasks get in now." : "Not this time. Come back with a clear reason.";
+    }
+    const u = m === 1 ? "minute" : "minutes";
+    return {
+      reply: `Granted: ${m} ${u} to reply. Then out.`,
+      lookup: `Granted: ${m} ${u}. Find it and leave.`,
+      work: `Granted: ${m} ${u} for work. Stay on task.`,
+      create: `Granted: ${m} ${u} to create. Post and go.`,
+      habit: `${m} ${u}. Notice the habit.`,
+      bored: `${m} ${u}. Maybe stand up and stretch after?`,
+    }[c];
+  }
+  const ordinal = n => { const a = n % 100, b = n % 10; return n + ((a >= 11 && a <= 13) ? "th" : b === 1 ? "st" : b === 2 ? "nd" : b === 3 ? "rd" : "th"); };
+
+  // ---- Demo state ----
+  const SECONDS_PER_MINUTE = 10;
+  const seed = () => ({
+    phase: "normal", opens: 5, budget: 60,
+    passes: [
+      { reason: "Reply to Sam", category: "reply", minutes: 3, honored: true },
+      { reason: "Just checking", category: "habit", minutes: 1, honored: null },
+      { reason: "Look up the gym hours", category: "lookup", minutes: 2, honored: true },
+      { reason: "I'm bored", category: "bored", minutes: 0, honored: null },
+    ],
+    pass: null, lastReason: "",
+  });
+  let S = seed();
+  let timer = null;
+
+  const $ = id => document.getElementById(id);
+  const views = ["shield", "breathe", "ask", "think", "result", "home", "wrapped"];
+  const COPY = {
+    shield: ["You open TikTok. The door is closed.", "Instead of TikTok, you see Doorman's block screen. It shows one line about your day: your next meeting and how many times you opened apps today.", "Try it: tap “Ask Doorman” on the phone."],
+    pending: ["A notification appears.", "Apple doesn't let the block screen open another app. So Doorman sends a notification, and tapping it opens the pass screen.", "Try it: tap the notification at the top of the phone."],
+    breathe: ["A small pause first.", "At night, or after many opens in one hour, Doorman asks for one slow breath before you can ask. Real needs still get in. The pause just stops the autopilot.", "Try it: press and hold the circle."],
+    ask: ["Say why you want in.", "Type or say a few words. Doorman's AI runs on your iPhone and decides how long you get. It knows the time, your day and how often you opened apps.", "Try it: tap a quick reason, then “Ask”."],
+    result: ["Doorman decides.", "A real reason gets a short pass. \"Just checking\" gets 1 minute, and at night it gets nothing. Doorman never shames you; it just keeps the door.", "Tap the button to continue."],
+    homePass: ["The pass is running.", "TikTok is open now. The countdown runs in the Dynamic Island at the top. When it hits zero, TikTok locks again by itself.", "Watch the top of the phone. It's fast in this preview."],
+    home: ["Your home screen.", "See today's opens, passes and attention budget. Every pass is listed, with what you said you would do.", "Try it: tap “Ask for a pass”."],
+    honesty: ["Did you do it?", "After the pass, Doorman asks if you did what you said. Over time it learns which of your reasons are real.", "Try it: tap Yes or No on the notification."],
+    wrapped: ["Attention Wrapped, every Sunday.", "A weekly card with your opens, your worst hour and how often you kept your word. People love to share it, so it's free marketing.", "These numbers are an example week."],
+  };
+  function explain(key) { const [t, b, x] = COPY[key]; $("exTitle").textContent = t; $("exBody").textContent = b; $("exTry").textContent = x; }
+
+  function show(name) {
+    views.forEach(v => { $("v-" + v).hidden = v !== name; });
+    const chipFor = { shield: "shield", breathe: "ask", ask: "ask", think: "ask", result: "ask", home: "home", wrapped: "wrapped" }[name];
+    document.querySelectorAll("[data-go]").forEach(c => c.setAttribute("aria-pressed", String(c.dataset.go === chipFor)));
+  }
+  function hideBanner() { $("banner").classList.remove("show"); }
+  function showBanner(text, honesty) {
+    $("bannerText").textContent = text;
+    $("bannerActions").hidden = !honesty;
+    $("banner").dataset.kind = honesty ? "honesty" : "pass";
+    $("banner").classList.add("show");
+  }
+
+  function ctxLine() {
+    const n = ordinal(S.opens + 1) + " open today";
+    if (S.phase === "night") return "Night door is on · " + n;
+    if (S.phase === "morning") return "Set your first task first · " + n;
+    return "Deck review in 47 min · " + n;
+  }
+  function renderShield(pending) {
+    $("shieldSub").textContent = pending ? "Tap the Doorman notification above to ask." : ctxLine();
+  }
+  const usedToday = () => S.passes.reduce((a, p) => a + p.minutes, 0);
+
+  function renderHome() {
+    const granted = S.passes.filter(p => p.minutes > 0);
+    $("sOpens").textContent = S.opens;
+    $("sPasses").textContent = granted.length;
+    $("sDenied").textContent = S.passes.length - granted.length;
+    const used = usedToday();
+    $("budgetText").textContent = `${used} of ${S.budget} min used today`;
+    const frac = Math.min(used / S.budget, 1);
+    $("budgetRing").setAttribute("stroke-dashoffset", String(119.4 * (1 - frac)));
+    const list = $("passList");
+    list.innerHTML = "";
+    S.passes.slice().reverse().forEach(p => {
+      const row = document.createElement("div");
+      row.className = "pass-row";
+      const pill = p.minutes === 0 ? '<span class="pill no">kept out</span>'
+        : mindless(p.category) ? '<span class="pill hab">habit</span>'
+        : p.honored === true ? '<span class="pill ok">done ✓</span>'
+        : p.honored === false ? '<span class="pill no">not done</span>' : '<span class="pill ok">pass</span>';
+      const r = document.createElement("span"); r.className = "r"; r.textContent = p.reason;
+      const m = document.createElement("span"); m.className = "m"; m.textContent = p.minutes ? p.minutes + " min" : "—";
+      row.innerHTML = pill; row.appendChild(r); row.appendChild(m);
+      list.appendChild(row);
+    });
+    const live = S.pass && S.pass.endsAt > Date.now();
+    $("doorState").textContent = live ? "Door is open" : "Door is closed";
+    $("endPass").hidden = !live;
+    if (!live) $("doorSub").textContent = S.phase === "night" ? "Night door is on" : "5 apps behind the door";
+  }
+
+  // ---- Island countdown ----
+  function fmt(sec) { const m = Math.floor(sec / 60), s = sec % 60; return m + ":" + String(s).padStart(2, "0"); }
+  function tick() {
+    if (!S.pass) return;
+    const leftMs = S.pass.endsAt - Date.now();
+    const island = $("island");
+    if (leftMs <= 0) {
+      clearInterval(timer); timer = null;
+      island.classList.add("closed");
+      $("ilText").textContent = "Door closed";
+      $("irText").textContent = "🔒";
+      $("doorSub").textContent = "TikTok is locked again";
+      renderHome();
+      const p = S.pass; S.pass = null;
+      setTimeout(() => {
+        island.classList.remove("live", "closed");
+        if (!mindless(p.category)) { showBanner(`Did you ${p.reason.charAt(0).toLowerCase() + p.reason.slice(1)}?`, true); explain("honesty"); }
+        else explain("home");
+      }, 1600);
+      return;
+    }
+    // Show "real" minutes: each demo second counts as 6 real seconds.
+    const realLeft = Math.ceil(leftMs / 1000 * (60 / SECONDS_PER_MINUTE));
+    $("irText").textContent = fmt(realLeft);
+    $("doorSub").textContent = fmt(realLeft) + " left · " + S.pass.reason;
+  }
+  function startPass(record) {
+    S.pass = { ...record, endsAt: Date.now() + record.minutes * SECONDS_PER_MINUTE * 1000 };
+    const island = $("island");
+    island.classList.remove("closed");
+    island.classList.add("live");
+    $("ilText").textContent = "Pass";
+    clearInterval(timer); timer = setInterval(tick, 250); tick();
+  }
+  function endPassNow() {
+    if (!S.pass) return;
+    S.pass.endsAt = Date.now();
+    tick();
+  }
+
+  // ---- Flow ----
+  function goShield() { hideBanner(); show("shield"); renderShield(false); explain("shield"); }
+  function openPassScreen() {
+    hideBanner();
+    const attemptsLastHour = Math.min(S.opens, 7) - 1;
+    const risky = S.phase === "night" || attemptsLastHour >= 6;
+    $("askCtx").textContent = ctxLine();
+    if (risky) { show("breathe"); explain("breathe"); resetHold(); }
+    else { show("ask"); explain("ask"); }
+  }
+  $("askBtn").addEventListener("click", () => {
+    S.opens += 1;
+    renderShield(true);
+    setTimeout(() => showBanner("Tap here and tell me why you want in.", false), 250);
+    explain("pending");
+  });
+  $("notNow").addEventListener("click", () => { $("shieldSub").textContent = "Good call. TikTok stays closed."; });
+  $("banner").addEventListener("click", e => {
+    if (e.target.closest("[data-honest]")) return;
+    if ($("banner").dataset.kind === "pass") openPassScreen();
+  });
+  document.querySelectorAll("[data-honest]").forEach(b => b.addEventListener("click", e => {
+    e.stopPropagation();
+    const last = S.passes[S.passes.length - 1];
+    if (last) last.honored = b.dataset.honest === "yes";
+    hideBanner(); show("home"); renderHome(); explain("home");
+  }));
+  document.querySelectorAll("[data-close]").forEach(b => b.addEventListener("click", goShield));
+
+  // breathe hold
+  let holdStart = 0, holdRaf = 0;
+  const HOLD_MS = 3000;
+  function resetHold() { cancelAnimationFrame(holdRaf); holdStart = 0; $("holdRing").style.strokeDashoffset = "502"; $("holdText").textContent = "Press and hold"; }
+  function holdLoop() {
+    const p = Math.min((performance.now() - holdStart) / HOLD_MS, 1);
+    $("holdRing").style.strokeDashoffset = String(502 * (1 - p));
+    $("holdText").textContent = p < 0.5 ? "Breathe in…" : "…and out";
+    if (p >= 1) { show("ask"); explain("ask"); return; }
+    holdRaf = requestAnimationFrame(holdLoop);
+  }
+  const holdBtn = $("holdBtn");
+  holdBtn.addEventListener("pointerdown", e => { e.preventDefault(); holdStart = performance.now(); holdRaf = requestAnimationFrame(holdLoop); });
+  ["pointerup", "pointerleave", "pointercancel"].forEach(ev => holdBtn.addEventListener(ev, () => { if (holdStart && !$("v-breathe").hidden) resetHold(); }));
+  holdBtn.addEventListener("keydown", e => { if ((e.key === " " || e.key === "Enter") && !holdStart) { e.preventDefault(); holdStart = performance.now(); holdRaf = requestAnimationFrame(holdLoop); } });
+  holdBtn.addEventListener("keyup", () => { if (!$("v-breathe").hidden) resetHold(); });
+
+  // ask
+  const reason = $("reason");
+  reason.addEventListener("input", () => { $("askGo").disabled = reason.value.trim().length === 0; });
+  $("quick").addEventListener("click", e => {
+    const b = e.target.closest("button"); if (!b) return;
+    reason.value = b.textContent; $("askGo").disabled = false; reason.focus();
+  });
+  $("askGo").addEventListener("click", () => {
+    const text = reason.value.trim(); if (!text) return;
+    show("think");
+    setTimeout(() => {
+      const d = decide(text, S.phase, Math.min(S.opens, 7) - 1, usedToday(), S.budget);
+      const record = { reason: text, category: d.category, minutes: d.minutes, honored: null };
+      S.passes.push(record); S.lastReason = text;
+      const ok = d.minutes > 0;
+      $("verdict").textContent = ok ? "Granted" : "Door stays closed";
+      $("verdict").className = "verdict " + (ok ? "ok" : "no");
+      $("mins").hidden = !ok;
+      $("mins").innerHTML = d.minutes + "<small> min</small>";
+      $("reply").textContent = d.reply;
+      $("resultDone").textContent = ok ? "Open TikTok" : "OK";
+      $("resultDone").dataset.ok = String(ok);
+      show("result"); explain("result");
+    }, 1100);
+  });
+  $("resultDone").addEventListener("click", () => {
+    reason.value = ""; $("askGo").disabled = true;
+    const last = S.passes[S.passes.length - 1];
+    show("home");
+    if ($("resultDone").dataset.ok === "true") { startPass(last); explain("homePass"); }
+    else explain("home");
+    renderHome();
+  });
+  $("homeAsk").addEventListener("click", openPassScreen);
+  $("endPass").addEventListener("click", endPassNow);
+
+  // chips
+  document.querySelectorAll("[data-go]").forEach(c => c.addEventListener("click", () => {
+    hideBanner();
+    const go = c.dataset.go;
+    if (go === "shield") goShield();
+    else if (go === "ask") openPassScreen();
+    else if (go === "home") { show("home"); renderHome(); explain(S.pass ? "homePass" : "home"); }
+    else { show("wrapped"); explain("wrapped"); }
+  }));
+  const PHASE_NOTE = {
+    normal: "Daytime: real reasons get a short pass. \"Just checking\" gets 1 minute.",
+    morning: "Morning door: until you set your first task, \"just checking\" and \"bored\" are kept out.",
+    night: "Night door: only short replies or look-ups get in (about 1 minute). Everything else waits for morning.",
+  };
+  const CLOCK = { normal: "2:13", morning: "7:42", night: "11:58" };
+  document.querySelectorAll("[data-phase]").forEach(c => c.addEventListener("click", () => {
+    S.phase = c.dataset.phase;
+    document.querySelectorAll("[data-phase]").forEach(x => x.setAttribute("aria-pressed", String(x === c)));
+    $("phaseNote").textContent = PHASE_NOTE[S.phase];
+    $("clock").textContent = CLOCK[S.phase];
+    if (!$("v-shield").hidden) renderShield(false);
+    $("askCtx").textContent = ctxLine();
+    renderHome();
+  }));
+  $("reset").addEventListener("click", () => {
+    clearInterval(timer); timer = null;
+    S = seed();
+    $("island").classList.remove("live", "closed");
+    document.querySelectorAll("[data-phase]").forEach(x => x.setAttribute("aria-pressed", String(x.dataset.phase === "normal")));
+    $("phaseNote").textContent = PHASE_NOTE.normal; $("clock").textContent = CLOCK.normal;
+    reason.value = ""; $("askGo").disabled = true;
+    goShield(); renderHome();
+  });
+
+  renderHome();
+  goShield();
+})();
+</script>
